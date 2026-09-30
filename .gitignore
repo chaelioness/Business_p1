@@ -216,3 +216,7 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# 과제 데이터와 로컬 산출물
+dataset/
+*.csv
