@@ -77,17 +77,30 @@ def match_decode(p_tr, y_tr, p_te):
 
 
 def metrics(y, pr):
+    """폴드 하나의 지표. _y/_p 는 합쳐서 채점(pooled)할 때 쓴다."""
+    y, pr = np.asarray(y, dtype=int), np.asarray(pr, dtype=int)
     r = score(y, pr)
-    return {k: r[k] for k in METRICS} | {"flat%": float((pr == 2).mean() * 100)}
+    return {k: r[k] for k in METRICS} | {"flat%": float((pr == 2).mean() * 100), "_y": y, "_p": pr}
 
 
 def summary(rows, by="model"):
+    """폴드별 score + 전체 평가 행을 합쳐 한 번 낸 지표(주 지표) + 폴드 평균 score."""
     r = pd.DataFrame(rows)
     fold = r.pivot_table(index=by, columns="fold", values="score", sort=False).round(3)
-    mean = r.groupby(by, sort=False)[METRICS + ["flat%"]].mean().round(3)
+    pooled = {}
+    for k, g in r.groupby(by, sort=False):
+        y, p = np.concatenate(g._y.values), np.concatenate(g._p.values)
+        s = score(y, p)
+        pooled[k] = {m: s[m] for m in METRICS} | {"flat%": (p == 2).mean() * 100}
+    out = pd.concat([fold, pd.DataFrame(pooled).T.astype(float).round(3)], axis=1)
+    out["폴드평균"] = r.groupby(by, sort=False).score.mean().round(3)
     if "iter" in r:
-        mean["iter"] = r.groupby(by, sort=False)["iter"].mean().round(0)
-    return pd.concat([fold, mean], axis=1)
+        out["iter"] = r.groupby(by, sort=False)["iter"].mean().round(0)
+    return out
+
+
+def to_csv(rows, path):
+    pd.DataFrame(rows).drop(columns=["_y", "_p"], errors="ignore").to_csv(path, index=False)
 
 
 # ---------------------------------------------------------------- 1. 진단
@@ -119,13 +132,13 @@ def diag():
                 rows[-1]["_imp"] = imp / imp.sum()
         print(f"{name} 완료", flush=True)
     imp = pd.concat([r.pop("_imp") for r in rows if "_imp" in r], axis=1).mean(1)
-    print("\n== LightGBM 변형 비교 (폴드별 score, 평균 지표, 보합 예측 비율 %) ==")
+    print("\n== LightGBM 변형 비교 (폴드별 score | 합쳐서 채점한 지표 | 폴드 평균 score) ==")
     print(summary(rows).to_string())
     print("\n실제 평가 구간 보합 비율 %:",
           round(float(np.mean(np.concatenate([b[m].label.values == 2 for _, _, m in folds(targets=b.target)])) * 100), 1))
     print("\n== V1 기본 피처 중요도 (gain 비율, 폴드 평균) ==")
     print((imp.sort_values(ascending=False) * 100).round(1).to_string())
-    pd.DataFrame(rows).to_csv(CACHE / "v1_diag.csv", index=False)
+    to_csv(rows, CACHE / "v1_diag.csv")
 
 
 # ---------------------------------------------------------------- 2. 새 종목
@@ -150,11 +163,11 @@ def holdout(n_hold=10, seeds=(0, 1, 2)):
                 rows.append({"seed": s, "fold": name, "model": model, **metrics(part.label, pr)})
         print(f"seed {s} 제외 종목 {sorted(hold)}", flush=True)
     r = pd.DataFrame(rows)
-    print("\n== 새 종목 대응 (V1, 기본 LGB, 3개 제외 조합 × 5폴드 평균) ==")
-    print(summary(r.assign(fold=r.fold)).to_string())
-    print("\n조합(seed)별 score 평균")
+    print("\n== 새 종목 대응 (V1, 기본 LGB, 3개 제외 조합 × 폴드, 합쳐서 채점) ==")
+    print(summary(rows).to_string())
+    print("\n조합(seed)별 score (폴드 평균)")
     print(r.pivot_table(index="model", columns="seed", values="score", sort=False).round(3).to_string())
-    r.to_csv(CACHE / "v1_holdout.csv", index=False)
+    to_csv(rows, CACHE / "v1_holdout.csv")
 
 
 # ---------------------------------------------------------------- 3. 20종목
@@ -207,8 +220,7 @@ def universe(n=20, seed=0):
                         **metrics(part.label_50, m.predict(x).argmax(1))})
     print("\n== 같은 20종목 · 같은 모델, 피처 계산 기준만 다름 (V1) ==")
     print(summary(res).to_string())
-    pr = pd.DataFrame(res)
-    pr.to_csv(CACHE / "v1_universe.csv", index=False)
+    to_csv(res, CACHE / "v1_universe.csv")
 
 
 if __name__ == "__main__":
