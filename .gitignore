@@ -223,3 +223,9 @@ dataset/
 
 # 피처 캐시 (lab/cv.py)
 cache/
+
+# B 작업 캐시·대용량 산출물
+work/**/cache/
+*.parquet
+*.tar.gz
+*.zip
