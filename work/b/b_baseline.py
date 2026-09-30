@@ -106,11 +106,10 @@ def main():
     s = load_sample()
     s = s.merge(b[["symbol", "date", "target", "label", "ret_pct"]], on=["symbol", "date"])
 
-    rows, dist = [], {}
+    rows, dist, pooled = [], {}, {}
     for name, tr_m, te_m in folds(targets=b.target):
         tr, te = b[tr_m], b[te_m]
-        str_m = s.target < te.target.min()
-        s_tr = s[str_m]
+        s_tr = s[s.target <= tr.target.max()]           # 같은 학습 구간 (embargo 포함)
         s_te = s[(s.target >= te.target.min()) & (s.target <= te.target.max())]
         p, n_iter, _ = lgb_proba(tr, te, B_FEATURES)
         preds = {
@@ -124,14 +123,23 @@ def main():
             r = score(y, pr)
             rows.append({"fold": name, "model": model, **{k: r[k] for k in METRICS}, "n": r["n"]})
             dist.setdefault(model, []).append(np.bincount(pr, minlength=5))
-        print(f"{name}: 학습 {tr_m.sum():,} 평가 {te_m.sum():,}  LGB 반복 {n_iter}", flush=True)
+            pooled.setdefault(model, []).append((np.asarray(y, dtype=int), np.asarray(pr, dtype=int)))
+        print(f"{name}: 학습 {tr_m.sum():,} (대상일 ~{tr.target.max():%Y-%m-%d}) "
+              f"평가 {te_m.sum():,} ({te.target.min():%Y-%m-%d}~)  LGB 반복 {n_iter}", flush=True)
 
     r = pd.DataFrame(rows)
     pd.set_option("display.width", 200)
     print("\n폴드별")
     print(r.pivot(index="model", columns="fold", values="score").round(4).to_string())
-    print("\n평균 (폴드 평균)")
-    print(r.groupby("model")[METRICS].mean().round(4).to_string())
+    print("\n합쳐서 채점 (전체 평가 행으로 한 번 계산, 주 지표) + 폴드 평균 score")
+    pool = {}
+    for model, parts in pooled.items():
+        sc = score(np.concatenate([y for y, _ in parts]), np.concatenate([p for _, p in parts]))
+        pool[model] = {k: sc[k] for k in METRICS}
+    pool = pd.DataFrame(pool).T
+    pool["폴드평균"] = r.groupby("model").score.mean()
+    print(pool.round(4).to_string())
+    pool.to_csv(HERE / "cache" / "baseline_pooled.csv")
     print("\n예측 label 분포 (전체 평가, %)")
     d = pd.DataFrame({k: np.sum(v, axis=0) for k, v in dist.items()}).T
     print((d.div(d.sum(1), axis=0) * 100).round(1).to_string())
