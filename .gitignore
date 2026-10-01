@@ -226,6 +226,7 @@ cache/
 
 # B 작업 캐시·대용량 산출물
 work/**/cache/
+dataset_train/
 *.parquet
 *.tar.gz
 *.zip

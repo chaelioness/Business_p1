@@ -18,6 +18,7 @@ import pandas as pd
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE.parents[1]))
 sys.path.insert(0, str(HERE))
+sys.path.insert(0, str(HERE.parents[1] / "work" / "common"))
 
 from src import Dataset  # noqa: E402
 from features_b import B_FEATURES, build_b  # noqa: E402
