@@ -230,3 +230,7 @@ dataset_train/
 *.parquet
 *.tar.gz
 *.zip
+
+# 개인 메모 (팀 저장소에 올리지 않음)
+work/b/새채팅_인수인계.md
+work/b/.Rhistory
