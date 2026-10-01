@@ -1,0 +1,261 @@
+<title>밤사이 주가 단서</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Black+Han+Sans&display=swap">
+<style>
+/* Layout: 한 장면 = 큰 그림 하나 + 한두 줄. 세로로 넘기는 그림책 */
+:root{
+  --bg:#f3f6f8; --card:#ffffff; --ink:#1d2a33; --muted:#5b6b76;
+  --up:#2f6fd6; --down:#d2453b; --flat:#a9b4bc; --night:#24304a; --sun:#f2b33d;
+  --display:"Black Han Sans","Malgun Gothic",sans-serif;
+  --body:"Gowun Dodum","Malgun Gothic",sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#121a21; --card:#1b252e; --ink:#e7eef3; --muted:#9db0bd;
+  --up:#6aa1ff; --down:#ff7a6e; --flat:#5f6d77; --night:#0b1222; --sun:#ffc85a; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#121a21; --card:#1b252e; --ink:#e7eef3; --muted:#9db0bd;
+  --up:#6aa1ff; --down:#ff7a6e; --flat:#5f6d77; --night:#0b1222; --sun:#ffc85a; color-scheme:dark}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.55}
+.wrap{max-width:760px;margin:0 auto;padding-inline:16px;padding-block:28px 60px;display:flex;flex-direction:column;gap:22px}
+h1{font-family:var(--display);font-weight:400;font-size:clamp(30px,7vw,46px);line-height:1.15;margin:0;text-wrap:balance}
+.lead{color:var(--muted);margin:0}
+.scene{background:var(--card);border-radius:18px;padding:22px 20px;display:flex;flex-direction:column;gap:12px}
+.scene h2{font-family:var(--display);font-weight:400;font-size:24px;margin:0;text-wrap:balance}
+.scene p{margin:0}
+.step{font-size:13px;letter-spacing:.08em;color:var(--muted)}
+svg{width:100%;height:auto;display:block}
+svg text{font-family:var(--body);fill:var(--ink)}
+.big{font-family:var(--display);font-weight:400}
+.m{fill:var(--muted)!important}
+.end{text-align:center;color:var(--muted)}
+.end b{color:var(--ink)}
+</style>
+
+<div class="wrap">
+  <h1>밤사이 시간외 가격이 거의 다 알려 준다</h1>
+  <p class="lead">우리 주식 과제를 그림 8장으로.</p>
+
+  <section class="scene">
+    <div class="step">장면 1 · 게임 규칙</div>
+    <h2>아침 9시 반에 오늘 성적을 맞히기</h2>
+    <svg viewBox="0 0 600 170" role="img" aria-label="다섯 칸: 급하락, 하락, 보합, 상승, 급상승">
+      <g font-size="15" text-anchor="middle">
+        <rect x="10" y="40" width="104" height="80" rx="14" fill="var(--down)"/>
+        <text x="62" y="78" fill="#fff" style="fill:#fff" class="big" font-size="20">급하락</text>
+        <text x="62" y="102" style="fill:#fff">−2.5% 아래</text>
+        <rect x="128" y="40" width="104" height="80" rx="14" fill="var(--down)" opacity=".55"/>
+        <text x="180" y="86" class="big" font-size="20">하락</text>
+        <rect x="246" y="40" width="108" height="80" rx="14" fill="var(--flat)"/>
+        <text x="300" y="86" class="big" font-size="20">보합</text>
+        <rect x="368" y="40" width="104" height="80" rx="14" fill="var(--up)" opacity=".55"/>
+        <text x="420" y="86" class="big" font-size="20">상승</text>
+        <rect x="486" y="40" width="104" height="80" rx="14" fill="var(--up)"/>
+        <text x="538" y="78" style="fill:#fff" class="big" font-size="20">급상승</text>
+        <text x="538" y="102" style="fill:#fff">+2.5% 위</text>
+        <text x="300" y="155" class="m">어제 종가 대비 오늘 종가가 어느 칸에 떨어질까?</text>
+      </g>
+    </svg>
+  </section>
+
+  <section class="scene">
+    <div class="step">장면 2 · 밤에도 가격은 움직인다</div>
+    <h2>하루 움직임의 약 30%는 문 열기 전에 이미 보인다</h2>
+    <svg viewBox="0 0 600 220" role="img" aria-label="어제 종가에서 밤사이 거래를 거쳐 개장, 오늘 종가까지의 선">
+      <rect x="150" y="20" width="300" height="150" rx="12" fill="var(--night)"/>
+      <circle cx="420" cy="48" r="12" fill="var(--sun)" opacity=".9"/>
+      <circle cx="426" cy="44" r="11" fill="var(--night)"/>
+      <polyline points="40,140 150,140 200,120 260,110 330,95 400,85 450,82" fill="none" stroke="var(--up)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+      <polyline points="450,82 490,100 520,70 560,88" fill="none" stroke="var(--flat)" stroke-width="5" stroke-dasharray="2 9" stroke-linecap="round"/>
+      <circle cx="40" cy="140" r="8" fill="var(--ink)"/>
+      <circle cx="450" cy="82" r="10" fill="var(--sun)"/>
+      <g font-size="15" text-anchor="middle">
+        <text x="40" y="200">어제 4시</text><text x="40" y="218" class="m">종가</text>
+        <text x="300" y="155" style="fill:#fff">시간외 거래 (밤)</text>
+        <text x="450" y="200">오늘 9시 반</text><text x="450" y="218" class="m">우리가 예측하는 순간</text>
+        <text x="560" y="60" class="m">?</text>
+      </g>
+    </svg>
+    <p>밤사이 거래 가격이 오른 쪽으로 가 있으면, 오늘 종가도 그쪽일 가능성이 높아요. 9시 반 이후는 거의 동전 던지기예요.</p>
+  </section>
+
+  <section class="scene">
+    <div class="step">장면 3 · 거래량 칸은 비어 있다</div>
+    <h2>거래량은 0으로 적혀 있지만, 가격은 제대로 있다</h2>
+    <p>데이터를 열어 보면 시간외 봉(밤과 새벽)의 거래량이 99.99% 0이에요. 처음엔 "밤에는 거래가 없었나?" 싶지만 아니에요. <b>거래가 없었던 게 아니라, 거래량 숫자를 적어 두지 않았을 뿐</b>이에요. 정규장(9시 반~4시) 봉은 거래량이 정상적으로 적혀 있어요.</p>
+    <svg viewBox="0 0 600 250" role="img" aria-label="시간외 봉 6개 예시: 거래량은 모두 0이지만 가격은 봉마다 다름">
+      <g font-size="14" text-anchor="middle">
+        <text x="40" y="34" text-anchor="start" class="m">가격</text>
+        <text x="40" y="214" text-anchor="start" class="m">거래량</text>
+      </g>
+      <g id="bars"></g>
+      <line x1="90" y1="196" x2="580" y2="196" stroke="var(--flat)" stroke-width="2"/>
+    </svg>
+    <p>한 종목의 하룻밤 시간외 봉 6개를 그린 예시예요(실제 데이터의 모양을 단순화). 아래 거래량 칸은 전부 0인데, 위 가격은 봉마다 달라요. 정말 아무도 거래하지 않았다면 가격도 멈춰 있어야 해요.</p>
+    <svg viewBox="0 0 600 210" role="img" aria-label="가격이 진짜라는 근거 세 가지">
+      <g font-size="15">
+        <rect x="10" y="10" width="180" height="190" rx="14" fill="var(--bg)"/>
+        <text x="100" y="60" text-anchor="middle" class="big" font-size="34" style="fill:var(--up)">92~99%</text>
+        <text x="100" y="100" text-anchor="middle">봉에서</text>
+        <text x="100" y="122" text-anchor="middle">가격이 바뀜</text>
+        <text x="100" y="170" text-anchor="middle" class="m" font-size="13">멈춘 가격이 아님</text>
+        <rect x="210" y="10" width="180" height="190" rx="14" fill="var(--bg)"/>
+        <text x="300" y="60" text-anchor="middle" class="big" font-size="34" style="fill:var(--up)">76%</text>
+        <text x="300" y="100" text-anchor="middle">새벽 가격이</text>
+        <text x="300" y="122" text-anchor="middle">개장 가격을 설명</text>
+        <text x="300" y="170" text-anchor="middle" class="m" font-size="13">가짜면 못 맞힘</text>
+        <rect x="410" y="10" width="180" height="190" rx="14" fill="var(--bg)"/>
+        <text x="500" y="60" text-anchor="middle" class="big" font-size="34" style="fill:var(--up)">0.80</text>
+        <text x="500" y="100" text-anchor="middle">실적 다음 날</text>
+        <text x="500" y="122" text-anchor="middle">밤 가격 ↔ 결과</text>
+        <text x="500" y="170" text-anchor="middle" class="m" font-size="13">뉴스에 실제로 반응</text>
+      </g>
+    </svg>
+    <p>그래서 쓸 수 없는 건 "밤사이 <b>얼마나 많이</b> 거래됐나" 하나뿐이에요. "밤사이 가격이 <b>어디로</b> 갔나"는 그대로 쓸 수 있어요. 처음엔 "거래량 0인 봉은 버리자"고 코드를 짰다가, 이걸 알아채고 고쳤어요. 버렸다면 가장 중요한 단서를 통째로 잃었을 거예요.</p>
+  </section>
+
+  <section class="scene">
+    <div class="step">장면 4 · 자를 어디에 대나</div>
+    <h2>어제 종가부터 재야 한다</h2>
+    <p>예: 월요일 4시에 100달러로 끝났고, 4시 10분에 좋은 실적이 나왔어요.</p>
+    <svg viewBox="0 0 600 300" role="img" aria-label="시간축 위 가격 선과 두 개의 자. 새 자는 어제 종가부터 +3.5%, 옛 자는 새벽 4시부터 +0.1%">
+      <rect x="60" y="20" width="420" height="150" rx="10" fill="var(--night)" opacity=".9"/>
+      <g stroke="var(--flat)" stroke-dasharray="3 5" stroke-width="1.5">
+        <line x1="40" y1="150" x2="560" y2="150"/>
+      </g>
+      <polyline points="40,150 70,150 110,62 170,58 230,60 330,66 400,64 470,62" fill="none" stroke="var(--up)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+      <circle cx="40" cy="150" r="7" fill="var(--ink)"/>
+      <circle cx="330" cy="66" r="6" fill="var(--sun)"/>
+      <circle cx="470" cy="62" r="7" fill="var(--sun)"/>
+      <line x1="500" y1="20" x2="500" y2="180" stroke="var(--down)" stroke-width="2"/>
+      <g font-size="13" text-anchor="middle">
+        <text x="40" y="172">월 4시</text><text x="40" y="188" class="m">100달러</text>
+        <text x="110" y="44" style="fill:#fff">실적 발표</text><text x="110" y="100" style="fill:#fff">104까지</text>
+        <text x="200" y="130" style="fill:#fff">애프터마켓</text>
+        <text x="400" y="130" style="fill:#fff">프리마켓</text>
+        <text x="330" y="90" style="fill:#fff">새벽 4시 103.4</text>
+        <text x="455" y="44" style="fill:#fff">103.5</text>
+        <text x="535" y="34" style="fill:var(--down)">화 9시 반</text><text x="535" y="50" class="m">예측 순간</text>
+        <text x="555" y="155" class="m">100</text>
+      </g>
+      <g font-size="14">
+        <line x1="40" y1="215" x2="470" y2="215" stroke="var(--up)" stroke-width="10" stroke-linecap="round"/>
+        <text x="40" y="240">새 자 (ovn_gap): 100 → 103.5 = <tspan class="big" font-size="18" style="fill:var(--up)">+3.5%</tspan></text>
+        <line x1="330" y1="262" x2="470" y2="262" stroke="var(--flat)" stroke-width="10" stroke-linecap="round"/>
+        <text x="320" y="267" text-anchor="end">옛 자 (pre_move): 103.4 → 103.5 = <tspan class="big" font-size="18">+0.1%</tspan></text>
+      </g>
+    </svg>
+    <p>옛 자는 새벽 4시 첫 가격부터 재요. 그런데 실적 반응은 전날 저녁에 이미 끝나서 새벽 4시엔 벌써 103.4였어요. 그래서 옛 자로는 "밤새 거의 안 움직였네(+0.1%)"가 돼요. 새 자는 전날 종가부터 재니까 +3.5%가 제대로 잡혀요. <b>둘 다 9시 반 전에 아는 가격만 쓰고, 개장 가격은 쓰지 않아요.</b></p>
+    <svg viewBox="0 0 600 90" role="img" aria-label="연습 시험 점수 0.23에서 0.43">
+      <g font-size="15">
+        <text x="10" y="20" class="m">연습 시험 점수 (폴드 4개 평균)</text>
+        <rect x="10" y="38" width="138" height="26" rx="6" fill="var(--flat)"/>
+        <text x="158" y="57">옛 자 0.23</text>
+        <rect x="260" y="38" width="258" height="26" rx="6" fill="var(--up)"/>
+        <text x="528" y="57" class="big" font-size="18">0.43</text>
+      </g>
+    </svg>
+  </section>
+
+  <section class="scene">
+    <div class="step">장면 5 · 방향과 크기</div>
+    <h2>오를지는 동전, 얼마나 흔들릴지는 날씨</h2>
+    <svg viewBox="0 0 600 200" role="img" aria-label="왼쪽 동전, 오른쪽 폭풍 구름">
+      <circle cx="150" cy="90" r="62" fill="var(--sun)"/>
+      <circle cx="150" cy="90" r="48" fill="none" stroke="var(--card)" stroke-width="4"/>
+      <text x="150" y="104" text-anchor="middle" class="big" font-size="40" style="fill:var(--night)">?</text>
+      <g fill="var(--flat)">
+        <circle cx="420" cy="80" r="38"/><circle cx="465" cy="70" r="44"/><circle cx="505" cy="88" r="32"/>
+        <rect x="390" y="85" width="140" height="35" rx="17"/>
+      </g>
+      <polyline points="455,122 440,152 462,150 446,184" fill="none" stroke="var(--sun)" stroke-width="6" stroke-linejoin="round"/>
+      <g font-size="15" text-anchor="middle">
+        <text x="150" y="182">어제 올랐다고 오늘 오르진 않음</text>
+        <text x="460" y="30" class="m">어제 폭풍이면 오늘도 폭풍</text>
+      </g>
+    </svg>
+    <p>RSI, 이동평균 같은 차트 지표로는 방향을 못 맞혀요. 하지만 최근에 많이 흔들린 종목은 내일도 크게 흔들려요.</p>
+  </section>
+
+  <section class="scene">
+    <div class="step">장면 6 · 누가 크게 움직이나</div>
+    <h2>원래 잘 흔들리는 종목이 급등락을 독차지</h2>
+    <svg viewBox="0 0 600 210" role="img" aria-label="코카콜라 2.7퍼센트 대 인텔 41.9퍼센트 막대">
+      <g font-size="16">
+        <text x="40" y="60">코카콜라</text>
+        <rect x="150" y="40" width="12" height="30" rx="4" fill="var(--up)"/>
+        <text x="172" y="62" class="big" font-size="20">2.7%</text>
+        <text x="40" y="130">인텔</text>
+        <rect x="150" y="110" width="400" height="30" rx="4" fill="var(--down)"/>
+        <text x="540" y="132" text-anchor="end" style="fill:#fff" class="big" font-size="20">41.9%</text>
+        <text x="40" y="185" class="m">급등락이 나온 날의 비율</text>
+      </g>
+    </svg>
+    <p>기준이 모두 ±2.5%로 같아서, 평소 4%씩 움직이는 종목에겐 매일이 급등락이에요. 그래서 "이 종목이 평소 얼마나 흔들리나"를 알려 주면 처음 보는 종목에도 통해요.</p>
+  </section>
+
+  <section class="scene">
+    <div class="step">장면 7 · 성적표 나오는 날</div>
+    <h2>실적 발표 다음 날은 셋 중 둘이 급등락</h2>
+    <svg viewBox="0 0 600 170" role="img" aria-label="평소 100칸 중 13칸, 실적일 100칸 중 64칸">
+      <g id="grid"></g>
+      <g font-size="15">
+        <text x="40" y="160">평소 13%</text>
+        <text x="330" y="160">실적일 64%</text>
+      </g>
+    </svg>
+    <p>회사가 3개월마다 성적표를 내는 날이에요. 평가 기간인 10월이 바로 성적표 시즌이에요.</p>
+  </section>
+
+  <section class="scene">
+    <div class="step">장면 8 · 채점 방식의 비밀</div>
+    <h2>헷갈리면 세게 찍는 게 이득</h2>
+    <svg viewBox="0 0 600 200" role="img" aria-label="벌점 비교: 보합 0, 과하게 1, 모자라게 4, 반대로 64">
+      <g font-size="15" text-anchor="middle">
+        <rect x="30" y="140" width="110" height="4" fill="var(--flat)"/>
+        <text x="85" y="128" class="big" font-size="26">0</text>
+        <text x="85" y="170">정답이 보합</text><text x="85" y="190" class="m">뭘 찍어도</text>
+        <rect x="170" y="128" width="110" height="16" rx="4" fill="var(--up)"/>
+        <text x="225" y="116" class="big" font-size="26">1</text>
+        <text x="225" y="170">너무 세게</text><text x="225" y="190" class="m">상승을 급상승으로</text>
+        <rect x="310" y="84" width="110" height="60" rx="4" fill="var(--sun)"/>
+        <text x="365" y="72" class="big" font-size="26">4</text>
+        <text x="365" y="170">너무 약하게</text><text x="365" y="190" class="m">급상승을 상승으로</text>
+        <rect x="450" y="10" width="120" height="134" rx="4" fill="var(--down)"/>
+        <text x="510" y="84" style="fill:#fff" class="big" font-size="30">64</text>
+        <text x="510" y="170">정반대로</text><text x="510" y="190" class="m">급상승을 급하락으로</text>
+      </g>
+    </svg>
+    <p>벌점은 이렇게 매겨져요. 약하게 찍는 벌점이 세게 찍는 벌점의 4배라서, 헷갈릴 땐 세게 찍는 게 나아요. 방향만 반대로 안 찍으면 돼요.</p>
+  </section>
+
+  <p class="end"><b>한 줄 요약:</b> 방향은 밤사이 가격에서, 크기는 평소 흔들림과 실적 일정에서.</p>
+</div>
+
+<script>
+(function(){
+  var g=document.getElementById('grid'),ns='http://www.w3.org/2000/svg';
+  function block(x0,hot,color){
+    for(var i=0;i<100;i++){
+      var r=document.createElementNS(ns,'rect');
+      r.setAttribute('x',x0+(i%20)*12);r.setAttribute('y',20+Math.floor(i/20)*20);
+      r.setAttribute('width',9);r.setAttribute('height',16);r.setAttribute('rx',2);
+      r.setAttribute('fill',i<hot?color:'var(--flat)');
+      if(i>=hot)r.setAttribute('opacity','.35');
+      g.appendChild(r);
+    }
+  }
+  block(40,13,'var(--down)');block(330,64,'var(--down)');
+})();
+
+(function(){
+  var g=document.getElementById('bars'),ns='http://www.w3.org/2000/svg';
+  var prices=[[ '16시',1.20],['17시',1.05],['18시',1.12],['19시',0.98],['새벽4시',1.08],['8시',1.22]];
+  prices.forEach(function(p,i){
+    var x=110+i*80, y=200-p[1]*120, t;
+    var c=document.createElementNS(ns,'circle');c.setAttribute('cx',x);c.setAttribute('cy',y);c.setAttribute('r',8);c.setAttribute('fill','var(--up)');g.appendChild(c);
+    if(i){var l=document.createElementNS(ns,'line');var px=110+(i-1)*80,py=200-prices[i-1][1]*120;
+      l.setAttribute('x1',px);l.setAttribute('y1',py);l.setAttribute('x2',x);l.setAttribute('y2',y);l.setAttribute('stroke','var(--up)');l.setAttribute('stroke-width','3');g.insertBefore(l,g.firstChild);}
+    t=document.createElementNS(ns,'text');t.setAttribute('x',x);t.setAttribute('y',214);t.setAttribute('text-anchor','middle');t.setAttribute('font-size','20');t.setAttribute('class','big');t.style.fill='var(--down)';t.textContent='0';g.appendChild(t);
+    t=document.createElementNS(ns,'text');t.setAttribute('x',x);t.setAttribute('y',240);t.setAttribute('text-anchor','middle');t.setAttribute('font-size','13');t.setAttribute('class','m');t.textContent=p[0];g.appendChild(t);
+  });
+})();
+</script>
