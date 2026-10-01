@@ -2,6 +2,8 @@
 
 Business Analytics Finance Project — 다음 거래일 방향 예측. 과제 설명은 [docs/project_overview.md](docs/project_overview.md),
 교수님 원본 README 는 [docs/course_README.md](docs/course_README.md).
+EDA 결과는 [팀 통합본](docs/worklog/2026-10-02_EDA_팀_통합본.md)과 [재은 EDA](docs/worklog/2026-10-01_EDA_금융데이터_탐색.md), 코드는 [eda/](eda/README.md).
+금융·통계 용어가 낯설면 [docs/glossary.md](docs/glossary.md), 그림으로 보려면 [docs/explainer/](docs/explainer/README.md).
 
 ## 시작
 
@@ -56,6 +58,7 @@ print(res.summary())               # 폴드별 score, all / seen / unseen
 | 전부 보합 | 0.000 | 0.000 | 0.000 | 0.000 | 0.000 |
 | 어제 label 따라가기 | -0.132 | -0.116 | -0.069 | -0.011 | -0.082 |
 | 개장 전 갭 하나로 구간 나누기 | 0.181 | 0.199 | 0.147 | 0.287 | 0.204 |
+| 전일 종가 기준 시간외 갭으로 구간 나누기 (`eda/cv_check_ovn_gap.py`) | 0.423 | 0.404 | 0.391 | 0.511 | **0.433** |
 
 ## 피처 규칙 (AI 에 코드 맡길 때도 이 규칙을 같이 붙여 줄 것)
 

@@ -1,0 +1,482 @@
+<title>밤사이 주가 단서</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Black+Han+Sans&display=swap">
+<style>
+/* Layout: 4부 그림책. 장면 = 큰 그림 하나 + 짧은 글. 맨 끝에 접히는 질문 모음 */
+:root{
+  --bg:#f3f6f8; --card:#ffffff; --ink:#1d2a33; --muted:#5b6b76; --line:#d8e0e6;
+  --up:#2f6fd6; --down:#d2453b; --flat:#a9b4bc; --night:#24304a; --sun:#f2b33d; --ok:#2e9d6a;
+  --display:"Black Han Sans","Malgun Gothic",sans-serif;
+  --body:"Gowun Dodum","Malgun Gothic",sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#121a21; --card:#1b252e; --ink:#e7eef3; --muted:#9db0bd; --line:#2c3a45;
+  --up:#6aa1ff; --down:#ff7a6e; --flat:#5f6d77; --night:#0b1222; --sun:#ffc85a; --ok:#4fc58e; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#121a21; --card:#1b252e; --ink:#e7eef3; --muted:#9db0bd; --line:#2c3a45;
+  --up:#6aa1ff; --down:#ff7a6e; --flat:#5f6d77; --night:#0b1222; --sun:#ffc85a; --ok:#4fc58e; color-scheme:dark}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.6}
+.wrap{max-width:780px;margin:0 auto;padding-inline:16px;padding-block:28px 60px;display:flex;flex-direction:column;gap:22px}
+h1{font-family:var(--display);font-weight:400;font-size:clamp(30px,7vw,46px);line-height:1.15;margin:0;text-wrap:balance}
+.lead{color:var(--muted);margin:0}
+nav.toc{display:flex;flex-wrap:wrap;gap:8px}
+nav.toc a{color:var(--ink);text-decoration:none;border:1px solid var(--line);border-radius:999px;padding:4px 12px;font-size:14px}
+nav.toc a:hover,nav.toc a:focus-visible{border-color:var(--up);outline:none}
+.part{font-family:var(--display);font-weight:400;font-size:28px;margin:18px 0 0;padding-top:8px;border-top:3px solid var(--ink)}
+.part small{display:block;font-family:var(--body);font-size:15px;color:var(--muted);margin-top:2px}
+.scene{background:var(--card);border-radius:18px;padding:22px 20px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.scene h2{font-family:var(--display);font-weight:400;font-size:24px;margin:0;text-wrap:balance}
+.scene p,.scene ul{margin:0}
+.scene ul{padding-left:20px}
+.step{font-size:13px;letter-spacing:.08em;color:var(--muted)}
+svg{width:100%;height:auto;display:block}
+svg text{font-family:var(--body);fill:var(--ink)}
+.big{font-family:var(--display);font-weight:400}
+.m{fill:var(--muted)!important}
+.w{fill:#fff!important}
+.tablebox{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:15px;font-variant-numeric:tabular-nums}
+th,td{border-bottom:1px solid var(--line);padding:7px 8px;text-align:left;vertical-align:top}
+th{color:var(--muted);font-weight:400;font-size:13px}
+.note{font-size:14px;color:var(--muted)}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px}
+.card{background:var(--bg);border-radius:12px;padding:12px 14px;display:flex;flex-direction:column;gap:4px;min-width:0}
+.card .num{font-family:var(--display);font-size:28px;line-height:1.1;color:var(--up)}
+.card .lab{font-size:14px;color:var(--muted)}
+.def{border:1px solid var(--line);border-radius:12px;padding:14px 16px;display:flex;flex-direction:column;gap:8px;min-width:0}
+.def p{margin:0}
+.deft{font-size:13px;letter-spacing:.08em;color:var(--muted)}
+.faq{display:flex;flex-direction:column;gap:8px}
+details{background:var(--card);border-radius:14px;padding:14px 18px}
+summary{cursor:pointer;font-weight:700}
+summary:focus-visible{outline:2px solid var(--up);outline-offset:4px;border-radius:4px}
+details p,details ul{margin:10px 0 0}
+details ul{padding-left:20px}
+code{font-size:.88em;background:var(--bg);padding:1px 5px;border-radius:5px;overflow-wrap:anywhere}
+.end{text-align:center;color:var(--muted)}
+.end b{color:var(--ink)}
+</style>
+
+<div class="wrap">
+  <h1>밤사이 주가 단서</h1>
+  <p class="lead">우리 팀 주식 예측 과제에서 지금까지 한 일. 시험장을 어떻게 만들었고, 데이터에서 무엇을 찾았고, 그 숫자를 왜 믿어도 되는지, 다음에 누가 무엇을 하는지.</p>
+  <nav class="toc" aria-label="목차">
+    <a href="#p1">1부 시험장 만들기</a><a href="#p2">2부 데이터에서 찾은 것</a><a href="#p3">3부 믿어도 되나</a><a href="#p4">4부 다음 할 일</a><a href="#faq">자주 나올 질문</a>
+  </nav>
+
+  <h2 class="part" id="p1">1부 · 시험장 만들기<small>모델보다 먼저, 공정하게 점수를 잴 장치를 만들었어요</small></h2>
+
+  <section class="scene">
+    <div class="step">장면 1 · 게임 규칙</div>
+    <h2>아침 9시 반에 오늘 성적을 맞히기</h2>
+    <svg viewBox="0 0 600 170" role="img" aria-label="다섯 칸: 급하락, 하락, 보합, 상승, 급상승">
+      <g font-size="15" text-anchor="middle">
+        <rect x="10" y="40" width="104" height="80" rx="14" fill="var(--down)"/>
+        <text x="62" y="78" class="big w" font-size="20">급하락</text><text x="62" y="102" class="w">−2.5% 아래</text>
+        <rect x="128" y="40" width="104" height="80" rx="14" fill="var(--down)" opacity=".55"/>
+        <text x="180" y="78" class="big" font-size="20">하락</text><text x="180" y="102">−2.5~−0.6</text>
+        <rect x="246" y="40" width="108" height="80" rx="14" fill="var(--flat)"/>
+        <text x="300" y="78" class="big" font-size="20">보합</text><text x="300" y="102">±0.6% 안</text>
+        <rect x="368" y="40" width="104" height="80" rx="14" fill="var(--up)" opacity=".55"/>
+        <text x="420" y="78" class="big" font-size="20">상승</text><text x="420" y="102">+0.6~+2.5</text>
+        <rect x="486" y="40" width="104" height="80" rx="14" fill="var(--up)"/>
+        <text x="538" y="78" class="big w" font-size="20">급상승</text><text x="538" y="102" class="w">+2.5% 위</text>
+        <text x="300" y="155" class="m">어제 종가 대비 오늘 종가가 어느 칸에 떨어질까?</text>
+      </g>
+    </svg>
+    <p>50개 미국 대형주를 날마다 맞혀요. 9시 반 이후 데이터는 쓰면 안 돼요. 교수님은 <b>10월</b> 한 달, <b>우리가 받은 종목 10개 + 처음 보는 종목 10개</b>로 채점해요.</p>
+  </section>
+
+  <section class="scene">
+    <div class="step">장면 2 · 데이터 나누기</div>
+    <h2>마지막 3개월은 금고에 넣었다</h2>
+    <svg viewBox="0 0 600 180" role="img" aria-label="시간축: 개발 구간 2024-08부터 2026-05까지, 홀드아웃 2026-05-29부터 09-11까지 잠금, 공백 후 10월 평가">
+      <rect x="20" y="50" width="380" height="46" rx="8" fill="var(--up)"/>
+      <text x="210" y="79" text-anchor="middle" class="w" font-size="16">개발 구간 · 449일 · 팀 전원이 씀</text>
+      <rect x="406" y="50" width="104" height="46" rx="8" fill="var(--night)"/>
+      <rect x="450" y="68" width="18" height="14" rx="3" fill="var(--sun)"/>
+      <path d="M453 68 v-4 a6 6 0 0 1 12 0 v4" fill="none" stroke="var(--sun)" stroke-width="3"/>
+      <rect x="516" y="50" width="20" height="46" fill="var(--flat)" opacity=".5"/>
+      <rect x="542" y="50" width="44" height="46" rx="8" fill="var(--down)"/>
+      <g font-size="13" text-anchor="middle">
+        <text x="20" y="40" text-anchor="start" class="m">2024-08</text>
+        <text x="400" y="40" text-anchor="end" class="m">2026-05-28</text>
+        <text x="458" y="120">홀드아웃</text><text x="458" y="138" class="m">73일, 잠금</text>
+        <text x="526" y="160" class="m">공백</text>
+        <text x="564" y="120">평가</text><text x="564" y="138" class="m">10월</text>
+      </g>
+    </svg>
+    <p>모든 결정을 다 내린 뒤 <b>딱 한 번만</b> 열어 볼 기간(홀드아웃)을 떼어 놨어요. 미리 보고 고르면 시험 문제를 보고 공부한 셈이라 실제 10월 점수가 떨어져요. 홀드아웃 데이터는 팀 공유 zip에 아예 없어요.</p>
+    <p class="note">EDA는 그보다 더 앞, 2026-02-12까지만 봤어요. 검증 기간까지 보고 피처를 고르면 연습 점수가 부풀려지기 때문이에요.</p>
+  </section>
+
+  <section class="scene">
+    <div class="step">장면 3 · 연습 시험 4번</div>
+    <h2>과거로 공부하고, 그 뒤로 시험 본다</h2>
+    <svg viewBox="0 0 600 230" role="img" aria-label="폴드 4개: 학습 구간이 점점 길어지고, 12거래일 공백 뒤 60일 검증">
+      <g font-size="14">
+        <text x="10" y="44">fold1</text><rect x="70" y="28" width="185" height="24" rx="5" fill="var(--up)" opacity=".75"/><rect x="273" y="28" width="56" height="24" rx="5" fill="var(--sun)"/>
+        <text x="10" y="88">fold2</text><rect x="70" y="72" width="241" height="24" rx="5" fill="var(--up)" opacity=".75"/><rect x="329" y="72" width="56" height="24" rx="5" fill="var(--sun)"/>
+        <text x="10" y="132">fold3</text><rect x="70" y="116" width="297" height="24" rx="5" fill="var(--up)" opacity=".75"/><rect x="385" y="116" width="56" height="24" rx="5" fill="var(--sun)"/>
+        <text x="10" y="176">fold4</text><rect x="70" y="160" width="353" height="24" rx="5" fill="var(--up)" opacity=".75"/><rect x="441" y="160" width="56" height="24" rx="5" fill="var(--sun)"/>
+        <rect x="70" y="204" width="16" height="12" rx="3" fill="var(--up)" opacity=".75"/><text x="92" y="215" class="m">학습</text>
+        <rect x="150" y="204" width="16" height="12" rx="3" fill="var(--sun)"/><text x="172" y="215" class="m">검증 60일</text>
+        <text x="270" y="215" class="m">사이 빈칸 = 12거래일 비움</text>
+      </g>
+    </svg>
+    <p>한 번만 시험 보면 운인지 실력인지 몰라서 기간을 바꿔 4번 봐요. 무작위로 섞지 않아요. 섞으면 내일 데이터로 오늘을 공부하는 꼴이 돼요. 날짜는 <code>lab/folds.json</code> 한 파일에 있고, 셋 다 이걸 읽어서 써요.</p>
+  </section>
+
+  <section class="scene">
+    <div class="step">장면 4 · 왜 12거래일을 비우나</div>
+    <h2>실제 채점도 12거래일 떨어져 있다</h2>
+    <svg viewBox="0 0 600 150" role="img" aria-label="9월 14일 마지막 정답, 9월 15일부터 30일까지 12거래일 공백, 10월 1일 채점 시작">
+      <rect x="30" y="56" width="200" height="28" rx="6" fill="var(--up)"/>
+      <rect x="236" y="56" width="180" height="28" rx="6" fill="var(--flat)" opacity=".45"/>
+      <rect x="422" y="56" width="148" height="28" rx="6" fill="var(--down)"/>
+      <g font-size="14" text-anchor="middle">
+        <text x="130" y="76" class="w">받은 데이터</text>
+        <text x="326" y="76">12거래일</text>
+        <text x="496" y="76" class="w">채점</text>
+        <text x="232" y="112">9/14</text><text x="232" y="130" class="m">마지막 정답</text>
+        <text x="422" y="112">10/1</text><text x="422" y="130" class="m">채점 시작</text>
+      </g>
+    </svg>
+    <p>실전 모델은 학습이 끝나고 12거래일 뒤부터 예측해요. 연습 시험도 똑같이 비워야 실제와 비슷한 점수가 나와요. 바로 다음 날부터 시험 보면 직전 며칠과 비슷한 패턴 덕에 점수가 부풀려져요.</p>
+  </section>
+
+  <section class="scene">
+    <div class="step">장면 5 · 처음 보는 종목 흉내</div>
+    <h2>10종목은 일부러 공부에서 뺐다</h2>
+    <svg viewBox="0 0 600 150" role="img" aria-label="점 50개 중 10개가 주황색: 학습에서 뺀 종목"><g id="dots"></g></svg>
+    <p>채점 종목 절반이 처음 보는 회사라서, 우리도 10개(<code>BA BKNG CVS GLW NFLX PFE QCOM RTX TMO WELL</code>)를 학습에서 빼고 점수를 따로 봐요. 이 종목들 점수가 많이 낮으면 모델이 종목을 외운 거예요. 그래서 <b>종목 이름은 피처로 쓰지 않아요.</b></p>
+  </section>
+
+  <section class="scene">
+    <div class="step">장면 6 · 미래를 보면 에러</div>
+    <h2>9시 반 벽을 넘으면 검사기가 멈춘다</h2>
+    <svg viewBox="0 0 600 170" role="img" aria-label="9시 반 벽 왼쪽은 써도 되는 정보, 오른쪽은 금지">
+      <rect x="20" y="20" width="360" height="110" rx="12" fill="var(--ok)" opacity=".18"/>
+      <rect x="400" y="20" width="180" height="110" rx="12" fill="var(--down)" opacity=".18"/>
+      <rect x="383" y="10" width="14" height="130" rx="3" fill="var(--ink)"/>
+      <g font-size="14">
+        <text x="36" y="48">✓ 어제까지 일봉, 밤사이 시간외 가격</text>
+        <text x="36" y="74">✓ 밤사이 뉴스, 실적 발표, 애널리스트 의견</text>
+        <text x="36" y="100">✓ Reddit 글·댓글 본문</text>
+        <text x="414" y="48">✗ 오늘 종가(정답)</text>
+        <text x="414" y="74">✗ 9시 반 이후 봉</text>
+        <text x="414" y="100">✗ Reddit 추천 수</text>
+        <text x="390" y="160" text-anchor="middle" class="m">대상일 09:30</text>
+      </g>
+    </svg>
+    <p>미리 알 수 없는 정보를 쓰는 걸 <b>누수</b>라고 해요. 연습 점수는 높은데 실제 채점에서 무너져요. <code>check_no_leak(build, days)</code>를 돌리면 9시 반 이후를 읽거나 정답을 보는 순간 어디서 틀렸는지 알려 줘요. Reddit 추천 수는 36시간 뒤에 모은 값이라 금지예요.</p>
+  </section>
+
+  <section class="scene">
+    <div class="step">장면 7 · 넘어야 할 점수</div>
+    <h2>아무 생각 없이 찍으면 0점이다</h2>
+    <svg viewBox="0 0 600 210" role="img" aria-label="기준선 점수 막대: 전부 보합 0, 어제 따라가기 마이너스 0.08, 기존 갭 0.20, 새 갭 0.43">
+      <line x1="200" y1="20" x2="200" y2="196" stroke="var(--line)" stroke-width="2"/>
+      <g font-size="15">
+        <text x="190" y="47" text-anchor="end">전부 보합</text><rect x="200" y="30" width="3" height="22" fill="var(--flat)"/><text x="212" y="47">0.00</text>
+        <text x="190" y="91" text-anchor="end">어제 따라가기</text><rect x="167" y="74" width="33" height="22" fill="var(--down)"/><text x="212" y="91">−0.08</text>
+        <text x="190" y="135" text-anchor="end">기존 갭 규칙</text><rect x="200" y="118" width="82" height="22" fill="var(--flat)"/><text x="292" y="135">0.20</text>
+        <text x="190" y="179" text-anchor="end">새 갭 규칙</text><rect x="200" y="162" width="177" height="22" fill="var(--up)"/><text x="387" y="180" class="big" font-size="20">0.43</text>
+      </g>
+    </svg>
+    <p>점수는 0이 무작위, 1이 완벽이에요. 한 칸만 계속 찍으면 정확히 0점이에요. <b>어제 따라가기</b>는 오히려 마이너스예요(장면 11에서 이유). 아래 두 개는 둘 다 <b>모델이 아니라 피처 하나로 만든 규칙</b>이고, 새 규칙은 2부에서 찾았어요.</p>
+  </section>
+
+  <h2 class="part" id="p2">2부 · 데이터에서 찾은 것<small>EDA: 2024-08 ~ 2026-02 데이터만 보고 찾은 것</small></h2>
+
+  <section class="scene">
+    <div class="step">장면 8 · 밤에도 가격은 움직인다</div>
+    <h2>하루 움직임의 약 30%는 문 열기 전에 이미 보인다</h2>
+    <svg viewBox="0 0 600 220" role="img" aria-label="어제 종가에서 밤사이 거래를 거쳐 개장, 오늘 종가까지의 선">
+      <rect x="150" y="20" width="300" height="150" rx="12" fill="var(--night)"/>
+      <circle cx="420" cy="48" r="12" fill="var(--sun)" opacity=".9"/><circle cx="426" cy="44" r="11" fill="var(--night)"/>
+      <polyline points="40,140 150,140 200,120 260,110 330,95 400,85 450,82" fill="none" stroke="var(--up)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+      <polyline points="450,82 490,100 520,70 560,88" fill="none" stroke="var(--flat)" stroke-width="5" stroke-dasharray="2 9" stroke-linecap="round"/>
+      <circle cx="40" cy="140" r="8" fill="var(--ink)"/><circle cx="450" cy="82" r="10" fill="var(--sun)"/>
+      <g font-size="15" text-anchor="middle">
+        <text x="40" y="200">어제 4시</text><text x="40" y="218" class="m">종가</text>
+        <text x="300" y="155" class="w">시간외 거래 (밤·새벽)</text>
+        <text x="450" y="200">오늘 9시 반</text><text x="450" y="218" class="m">우리가 예측하는 순간</text>
+        <text x="560" y="60" class="m">?</text>
+      </g>
+    </svg>
+    <p>미국 주식은 정규장(9시 반~4시) 밖에서도 거래돼요. 밤사이 나온 소식은 이 <b>시간외 가격</b>에 먼저 나타나요. 9시 반 이후 장중 움직임은 거의 동전 던지기예요.</p>
+    <p class="note">"30%"는 맞힌 비율이 아니라, 날마다 다른 수익률의 출렁임(분산) 중 개장 전에 이미 가격으로 보이는 몫이에요 (밤사이 몫 39% × 시간외 가격이 그걸 설명하는 정도 76%).</p>
+  </section>
+
+  <section class="scene">
+    <div class="step">장면 9 · 거래량 칸은 비어 있다</div>
+    <h2>거래량은 0으로 적혀 있지만, 가격은 제대로 있다</h2>
+    <p>시간외 봉의 거래량이 99.99% 0이에요. 거래가 없었던 게 아니라 <b>거래량 숫자를 적어 두지 않았을 뿐</b>이에요. 정규장 봉은 거래량이 정상으로 적혀 있어요.</p>
+    <svg viewBox="0 0 600 250" role="img" aria-label="시간외 봉 6개 예시: 거래량은 모두 0이지만 가격은 봉마다 다름">
+      <g font-size="14"><text x="40" y="34" class="m">가격</text><text x="40" y="214" class="m">거래량</text></g>
+      <g id="bars"></g>
+      <line x1="90" y1="196" x2="580" y2="196" stroke="var(--flat)" stroke-width="2"/>
+    </svg>
+    <p class="note">하룻밤 시간외 봉 6개를 단순화한 예시예요. 아무도 거래하지 않았다면 가격도 멈춰 있어야 해요.</p>
+    <div class="cards">
+      <div class="card"><span class="num">92~99%</span><span>봉에서 가격이 바뀜</span><span class="lab">멈춘 가격이 아님</span></div>
+      <div class="card"><span class="num">76%</span><span>새벽 가격이 개장 가격을 설명</span><span class="lab">가짜면 못 맞힘</span></div>
+      <div class="card"><span class="num">0.80</span><span>실적 다음 날 밤 가격 ↔ 결과</span><span class="lab">뉴스에 실제로 반응</span></div>
+    </div>
+    <p>그래서 못 쓰는 건 "밤사이 <b>얼마나 많이</b> 거래됐나" 하나뿐이에요. "가격이 <b>어디로</b> 갔나"는 그대로 써요. 처음엔 "거래량 0인 봉은 버리자"고 짰다가 이걸 알아채고 고쳤어요.</p>
+  </section>
+
+  <section class="scene">
+    <div class="step">장면 10 · 자를 어디에 대나</div>
+    <h2>어제 종가부터 재야 한다</h2>
+    <p>예: 월요일 4시에 100달러로 끝났고, 4시 10분에 좋은 실적이 나왔어요.</p>
+    <svg viewBox="0 0 600 300" role="img" aria-label="시간축 위 가격 선과 두 개의 자. 새 자는 어제 종가부터 +3.5%, 옛 자는 새벽 4시부터 +0.1%">
+      <rect x="60" y="20" width="420" height="150" rx="10" fill="var(--night)" opacity=".9"/>
+      <line x1="40" y1="150" x2="560" y2="150" stroke="var(--flat)" stroke-dasharray="3 5" stroke-width="1.5"/>
+      <polyline points="40,150 70,150 110,62 170,58 230,60 330,66 400,64 470,62" fill="none" stroke="var(--up)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+      <circle cx="40" cy="150" r="7" fill="var(--ink)"/><circle cx="330" cy="66" r="6" fill="var(--sun)"/><circle cx="470" cy="62" r="7" fill="var(--sun)"/>
+      <line x1="500" y1="20" x2="500" y2="180" stroke="var(--down)" stroke-width="2"/>
+      <g font-size="13" text-anchor="middle">
+        <text x="40" y="172">월 4시</text><text x="40" y="188" class="m">100달러</text>
+        <text x="110" y="44" class="w">실적 발표</text><text x="110" y="100" class="w">104까지</text>
+        <text x="200" y="130" class="w">애프터마켓</text><text x="400" y="130" class="w">프리마켓</text>
+        <text x="330" y="90" class="w">새벽 4시 103.4</text><text x="455" y="44" class="w">103.5</text>
+        <text x="535" y="34" style="fill:var(--down)">화 9시 반</text><text x="535" y="50" class="m">예측 순간</text>
+      </g>
+      <g font-size="14">
+        <line x1="40" y1="215" x2="470" y2="215" stroke="var(--up)" stroke-width="10" stroke-linecap="round"/>
+        <text x="40" y="240">새 자 (ovn_gap): 100 → 103.5 = <tspan class="big" font-size="18" style="fill:var(--up)">+3.5%</tspan></text>
+        <line x1="330" y1="262" x2="470" y2="262" stroke="var(--flat)" stroke-width="10" stroke-linecap="round"/>
+        <text x="320" y="267" text-anchor="end">옛 자 (pre_move): 103.4 → 103.5 = <tspan class="big" font-size="18">+0.1%</tspan></text>
+      </g>
+    </svg>
+    <p>옛 자는 새벽 4시 첫 가격부터 재서, 전날 저녁에 이미 끝난 실적 반응을 놓쳐요. 새 자는 전날 종가부터 재서 +3.5%를 잡아요. <b>둘 다 9시 반 전에 아는 가격만 쓰고, 개장 가격은 쓰지 않아요.</b> 마지막으로 쓰는 봉은 08:00 봉(09:00에 닫힘)이에요. 09:00 봉은 09:30에 닫혀서 못 써요.</p>
+    <div class="def">
+      <p class="deft">정확한 정의</p>
+      <p><b>갭(gap)</b>: 두 시점 사이의 가격 변화율(%). 이 과제에서는 "기준 가격"에서 "대상일 09:30 전에 마지막으로 알 수 있는 가격"까지의 변화율이에요.</p>
+      <p><b>"자"</b>: 비유예요. 실제로는 갭을 계산할 때 쓰는 <b>기준 가격(분모)</b>을 뜻해요. 자를 어디에 대느냐 = 기준 가격을 무엇으로 하느냐.</p>
+      <div class="tablebox"><table>
+        <thead><tr><th>이름</th><th>계산식</th><th>기준 가격</th><th>끝 가격</th></tr></thead>
+        <tbody>
+          <tr><td><b>ovn_gap</b><br><span class="note">새 방법</span></td><td><code>(P_last / C_B − 1) × 100</code></td><td>C_B: 기준일 종가 (일봉 <code>close</code>, 16:00 확정)</td><td rowspan="2">P_last: 대상일 09:30 전에 닫힌 마지막 시간외 봉의 종가. 보통 대상일 08:00 프리마켓 봉 (<code>known_at</code> 09:00)</td></tr>
+          <tr><td><b>pre_move</b><br><span class="note">기존 방법</span></td><td><code>(P_last / P_first − 1) × 100</code></td><td>P_first: 대상일 프리마켓 첫 봉의 종가 (보통 04:00 봉)</td></tr>
+          <tr><td><b>시가 갭</b><br><span class="note">분석에만 씀</span></td><td><code>(O_T / C_B − 1) × 100</code></td><td>C_B: 기준일 종가</td><td>O_T: 대상일 시가 (09:30). 예측 시점에 모르므로 <b>피처로 쓰지 않음</b></td></tr>
+        </tbody>
+      </table></div>
+      <p class="note">시간외 봉 = <code>price</code> 표에서 <code>session</code>이 <code>post</code>(기준일 16:00~20:00) 또는 <code>pre</code>(대상일 04:00~09:30)인 1시간봉. "닫힌 봉" = <code>known_at</code> &lt; 대상일 09:30. 코드는 <code>eda/cv_check_ovn_gap.py</code>의 <code>build_ovn_gap(day)</code>예요.</p>
+    </div>
+  </section>
+
+  <section class="scene">
+    <div class="step">장면 11 · 방향과 크기</div>
+    <h2>오를지는 동전, 얼마나 흔들릴지는 날씨</h2>
+    <svg viewBox="0 0 600 200" role="img" aria-label="왼쪽 동전, 오른쪽 폭풍 구름">
+      <circle cx="150" cy="90" r="62" fill="var(--sun)"/><circle cx="150" cy="90" r="48" fill="none" stroke="var(--card)" stroke-width="4"/>
+      <text x="150" y="104" text-anchor="middle" class="big" font-size="40" style="fill:#24304a">?</text>
+      <g fill="var(--flat)"><circle cx="420" cy="80" r="38"/><circle cx="465" cy="70" r="44"/><circle cx="505" cy="88" r="32"/><rect x="390" y="85" width="140" height="35" rx="17"/></g>
+      <polyline points="455,122 440,152 462,150 446,184" fill="none" stroke="var(--sun)" stroke-width="6" stroke-linejoin="round"/>
+      <g font-size="15" text-anchor="middle"><text x="150" y="182">어제 올랐다고 오늘 오르진 않음</text><text x="460" y="30" class="m">어제 폭풍이면 오늘도 폭풍</text></g>
+    </svg>
+    <p>RSI·이동평균 같은 차트 지표 25개로 방향을 재 보니 전부 우연 수준이었고, 반기마다 방향이 뒤집혔어요. 하지만 <b>최근에 많이 흔들린 종목은 내일도 크게 흔들려요</b>(변동성 하위 10% 그룹 급등락 4.5% → 상위 10% 그룹 31%).</p>
+    <p class="note">"어제 따라가기"가 마이너스인 이유: 급등락 다음 날 또 급등락할 확률은 높지만 방향은 무작위라서, 따라 찍으면 반대 방향 급등락에 가장 큰 벌점(64)을 맞아요.</p>
+  </section>
+
+  <section class="scene">
+    <div class="step">장면 12 · 누가 크게 움직이나</div>
+    <h2>원래 잘 흔들리는 종목이 급등락을 독차지</h2>
+    <svg viewBox="0 0 600 190" role="img" aria-label="코카콜라 2.7퍼센트 대 인텔 41.9퍼센트 막대">
+      <g font-size="16">
+        <text x="40" y="60">코카콜라</text><rect x="150" y="40" width="12" height="30" rx="4" fill="var(--up)"/><text x="172" y="62" class="big" font-size="20">2.7%</text>
+        <text x="40" y="130">인텔</text><rect x="150" y="110" width="400" height="30" rx="4" fill="var(--down)"/><text x="540" y="132" text-anchor="end" class="big w" font-size="20">41.9%</text>
+        <text x="40" y="180" class="m">급등락이 나온 날의 비율</text>
+      </g>
+    </svg>
+    <p>기준이 모두 ±2.5%로 같아서, 평소 4%씩 움직이는 종목에겐 매일이 급등락이에요(종목 변동성과 급등락 빈도의 상관 0.985). 그래서 종목 이름 대신 <b>"평소 얼마나 흔들리나"</b>를 알려 주면 처음 보는 종목에도 통해요.</p>
+  </section>
+
+  <section class="scene">
+    <div class="step">장면 13 · 성적표 나오는 날</div>
+    <h2>실적 발표 다음 날은 셋 중 둘이 급등락</h2>
+    <svg viewBox="0 0 600 170" role="img" aria-label="평소 100칸 중 13칸, 실적일 100칸 중 64칸">
+      <g id="grid"></g>
+      <g font-size="15"><text x="40" y="160">평소 13%</text><text x="330" y="160">실적일 64%</text></g>
+    </svg>
+    <p>회사가 3개월마다 성적표를 내는 날이에요. 직전 발표 후 90일쯤 지나면 다시 발표가 다가오니 그것도 단서예요. <b>평가 기간 10월이 바로 성적표 시즌</b>이라 실적 피처가 더 중요해져요. 다만 급등락 전체의 93%는 실적 외의 날에 나와요.</p>
+  </section>
+
+  <section class="scene">
+    <div class="step">장면 14 · 뉴스와 Reddit</div>
+    <h2>기사가 쏟아지면 크게 움직인다, 하지만 방향은 모른다</h2>
+    <div class="tablebox"><table>
+      <thead><tr><th>정보</th><th>크기(얼마나)</th><th>방향(어느 쪽)</th><th>한 줄</th></tr></thead>
+      <tbody>
+        <tr><td>장 마감 후 기사 수</td><td>✓ 도움</td><td>✗</td><td>갭을 빼고도 절반이 남음</td></tr>
+        <tr><td>기사 논조(긍정/부정)</td><td>△</td><td>✗</td><td>단어 목록 점수라 금융 맥락을 모름</td></tr>
+        <tr><td>애널리스트 의견</td><td>△</td><td>△</td><td>건수가 적고, 이미 빠진 뒤 따라 내림</td></tr>
+        <tr><td>Reddit 댓글 수</td><td>✗</td><td>✗</td><td>이미 일어난 일에 반응해 떠들 뿐</td></tr>
+      </tbody>
+    </table></div>
+    <p>LLM을 쓴다면 "호재냐 악재냐"보다 <b>"실적·소송·인수합병 같은 큰 사건 기사인가"</b>를 고르는 쪽에 근거가 있어요.</p>
+  </section>
+
+  <section class="scene">
+    <div class="step">장면 15 · 채점 방식의 비밀</div>
+    <h2>헷갈리면 세게 찍는 게 이득</h2>
+    <svg viewBox="0 0 600 200" role="img" aria-label="벌점 비교: 보합 0, 과하게 1, 모자라게 4, 반대로 64">
+      <g font-size="15" text-anchor="middle">
+        <rect x="30" y="140" width="110" height="4" fill="var(--flat)"/><text x="85" y="128" class="big" font-size="26">0</text>
+        <text x="85" y="170">정답이 보합</text><text x="85" y="190" class="m">뭘 찍어도</text>
+        <rect x="170" y="128" width="110" height="16" rx="4" fill="var(--up)"/><text x="225" y="116" class="big" font-size="26">1</text>
+        <text x="225" y="170">너무 세게</text><text x="225" y="190" class="m">상승을 급상승으로</text>
+        <rect x="310" y="84" width="110" height="60" rx="4" fill="var(--sun)"/><text x="365" y="72" class="big" font-size="26">4</text>
+        <text x="365" y="170">너무 약하게</text><text x="365" y="190" class="m">급상승을 상승으로</text>
+        <rect x="450" y="10" width="120" height="134" rx="4" fill="var(--down)"/><text x="510" y="84" class="big w" font-size="30">64</text>
+        <text x="510" y="170">정반대로</text><text x="510" y="190" class="m">급상승을 급하락으로</text>
+      </g>
+    </svg>
+    <p>약하게 찍는 벌점이 세게 찍는 벌점의 4배예요. 실제로 같은 갭 신호에서 급등락을 실제 비율(14%)보다 훨씬 많이(약 34%) 찍을 때 점수가 가장 높았어요. 방향만 반대로 안 찍으면 돼요.</p>
+  </section>
+
+  <h2 class="part" id="p3">3부 · 이 숫자, 믿어도 되나<small>점수가 너무 높아 보여서 다시 확인한 것</small></h2>
+
+  <section class="scene">
+    <div class="step">장면 16 · 숫자의 출처</div>
+    <h2>머신러닝 모델은 아직 하나도 안 만들었다</h2>
+    <div class="tablebox"><table>
+      <thead><tr><th>값</th><th>무엇으로 계산했나</th><th>찍는 규칙</th><th>쓴 피처</th><th>경계를 어디서 골랐나</th><th>채점한 데이터</th></tr></thead>
+      <tbody>
+        <tr><td><b>약 30%</b></td><td>점수 아님. 통계 (분산 39% × R² 0.76)</td><td>—</td><td>—</td><td>—</td><td>EDA 구간</td></tr>
+        <tr><td><b>0.334</b></td><td rowspan="3"><b>교수님 채점 함수</b><br><code>src.data.score</code></td><td>갭을 정답 경계(±0.6, ±2.5)에 그대로 대입</td><td>ovn_gap 하나</td><td>안 고름</td><td>EDA 구간 전체</td></tr>
+        <tr><td><b>0.426</b></td><td>경계 두 개를 바꿔 가며 최고점 찾기</td><td>ovn_gap 하나</td><td>채점한 데이터와 같은 곳 (부풀려질 수 있음)</td><td>EDA 구간 전체</td></tr>
+        <tr><td><b>0.433</b></td><td>연습 시험 4번 ← 새 기준선</td><td>ovn_gap 하나</td><td>폴드마다 학습 기간에서만</td><td>폴드별 검증 60일, 4개 점수의 평균</td></tr>
+      </tbody>
+    </table></div>
+    <p class="note">세 점수는 모두 교수님이 10월 채점에 쓰는 함수(<code>src/evaluate.py</code>가 부르는 <code>src.data.score</code>)로 계산했어요. 제가 따로 만든 점수식은 없어요. 다른 건 어떤 규칙으로 찍었고 어떤 기간을 채점했느냐뿐이에요.</p>
+    <p>규칙은 간단해요: 갭이 a보다 작으면 보합, a~b면 상승/하락, b보다 크면 급등락. 기존 규칙(0.20)과 <b>절차는 똑같고 갭 재는 법만</b> 바꿨어요. 공정하게 비교하려고 경계 후보 범위까지 맞추니 기존은 0.233이었어요. 변동성·실적·뉴스는 아직 아무것도 안 넣었어요.</p>
+    <div class="def">
+      <p class="deft">"경계 후보 9개"란?</p>
+      <p>규칙에는 숫자 두 개가 필요해요. <b>a</b> = 이보다 작은 갭은 보합으로 찍는 경계, <b>b</b> = 이보다 큰 갭은 급등락으로 찍는 경계. 가장 좋은 a, b를 미리 알 수 없어서, <b>몇 개의 후보 값을 정해 두고 모든 조합을 학습 기간에 시험해 점수가 가장 높은 쌍을 고릅니다.</b> 이 후보 값들이 "경계 후보"예요.</p>
+      <p><b>후보는 어떻게 정하나:</b> 학습 기간에 나온 |갭|(크기만, 부호 무시)을 작은 순서로 줄 세운 뒤, 특정 백분위에 있는 값을 꺼내요. 예를 들어 "50% 위치 값"은 |갭|이 그보다 작은 날이 절반이라는 뜻이에요.</p>
+      <div class="tablebox"><table>
+        <thead><tr><th>백분위</th><th>10%</th><th>20%</th><th>30%</th><th>40%</th><th>50%</th><th>60%</th><th>70%</th><th>80%</th><th>85%</th><th>90%</th><th>95%</th><th>97.5%</th><th>99%</th></tr></thead>
+        <tbody>
+          <tr><td>|ovn_gap| 값</td><td>0.04</td><td>0.10</td><td>0.16</td><td>0.23</td><td>0.32</td><td>0.42</td><td>0.57</td><td>0.81</td><td>1.01</td><td>1.38</td><td>2.13</td><td>3.12</td><td>4.75</td></tr>
+          <tr><td>기존 코드 (9개)</td><td></td><td></td><td></td><td></td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td></tr>
+          <tr><td>넓힌 버전 (13개)</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td></tr>
+        </tbody>
+      </table></div>
+      <p class="note">값은 EDA 구간(2024-08~2026-02) 기준 %예요. 실제로는 폴드마다 그 폴드의 학습 기간에서 다시 계산해서 조금씩 달라요.</p>
+      <ul>
+        <li><b>시험하는 조합 수:</b> a &lt; b 인 쌍만 보니까 9개면 36쌍, 13개면 78쌍이에요.</li>
+        <li><b>왜 넓혔나:</b> 기존 9개는 가장 작은 후보가 50% 위치예요. 그래서 a를 아무리 작게 골라도 "갭이 작은 절반의 날은 무조건 보합"이 돼요. 그런데 이 점수식은 보합을 적게 찍을수록 유리해서(장면 15), a가 더 작아질 수 있어야 해요.</li>
+        <li><b>공정한 비교:</b> 새 갭(0.433)은 13개 후보로 쟀어요. 기존 갭도 같은 13개로 다시 재니 0.20 → 0.233이 됐어요. 남은 0.233 → 0.433 차이가 순전히 "갭을 어디부터 재느냐"의 효과예요.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="scene">
+    <div class="step">장면 17 · 반칙 검사</div>
+    <h2>과제 PDF와 채점 코드에 대조했다</h2>
+    <div class="cards">
+      <div class="card"><span class="lab">과제 PDF 8쪽</span><span>"cutoff까지 들어옴: 기준일 장 마감 후 뉴스, <b>대상일 개장 전 시간외 거래</b>"</span></div>
+      <div class="card"><span class="lab">교수님 예제 모델</span><span>개장 전 시간외 등락(<code>pre_ret</code>)을 직접 피처로 씀</span></div>
+      <div class="card"><span class="lab">채점과 같은 방식</span><span>같은 점수 함수, 날마다 <code>predict(day)</code>, 12거래일 공백, 누수 검사기까지</span></div>
+    </div>
+    <svg viewBox="0 0 600 190" role="img" aria-label="개장에 가까운 봉일수록 개장 가격을 더 잘 설명: 08시 0.76, 09시 0.88. 장중 움직임과의 상관은 거의 0">
+      <g font-size="14">
+        <text x="10" y="24" class="m">새벽 가격이 개장 가격을 설명하는 정도</text>
+        <text x="10" y="58">08:00 봉 (씀)</text><rect x="150" y="42" width="304" height="24" rx="5" fill="var(--up)"/><text x="464" y="60">0.76</text>
+        <text x="10" y="98">09:00 봉 (못 씀)</text><rect x="150" y="82" width="352" height="24" rx="5" fill="var(--flat)"/><text x="512" y="100">0.88</text>
+        <text x="10" y="140" class="m">08:00 갭과 개장 후 장중 움직임의 상관</text>
+        <text x="10" y="172" class="big" font-size="22">−0.05</text><text x="90" y="171" class="m">미래 가격이 섞였다면 양수여야 함</text>
+      </g>
+    </svg>
+    <p>개장에 가까울수록 정보가 늘고, 개장 후 움직임과는 무관해요. 시각이 제대로 찍혀 있다는 뜻이에요. 점수가 높은 건 반칙이 아니라 <b>개장 전 가격이 그날 움직임을 이미 많이 담고 있어서</b>예요.</p>
+  </section>
+
+  <h2 class="part" id="p4">4부 · 다음 할 일<small>목표: 10/3까지 제출 가능한 첫 버전</small></h2>
+
+  <section class="scene">
+    <div class="step">장면 18 · 누가 무엇을</div>
+    <h2>방향은 갭, 크기는 여러 곳에서</h2>
+    <div class="tablebox"><table>
+      <thead><tr><th>사람</th><th>만들 것</th><th>왜</th></tr></thead>
+      <tbody>
+        <tr><td><b>민영</b><br><span class="note">정형 데이터</span></td><td>전일 종가 기준 갭, 시장 평균 갭과 종목만의 갭, 갭 ÷ 변동성, 20·60일 변동성, ATR, 20일 고점 대비, 실적 여부·직전 실적 후 경과일</td><td>방향 신호의 전부 + 크기 신호의 핵심</td></tr>
+        <tr><td><b>채민</b><br><span class="note">뉴스</span></td><td>장 마감 후 기사 수, 한 종목만 다룬 기사 수, 긍정 단어 비율, 애널리스트 의견 건수</td><td>갭으로 설명 안 되는 크기 정보</td></tr>
+        <tr><td><b>재은</b><br><span class="note">모델</span></td><td>피처를 합쳐 LightGBM, 시장 분위기 피처, 점수식에 맞춘 찍는 규칙, <code>src/model.py</code>로 합치기</td><td>0.43을 넘는 게 목표</td></tr>
+      </tbody>
+    </table></div>
+    <p><b>피처 만들 때 지킬 것</b></p>
+    <ul>
+      <li>데이터는 <code>day.daily()</code>, <code>day.price()</code>처럼 <code>day</code>로만 꺼내기</li>
+      <li>종목 이름 대신 수익률·비율·변동성 대비 값으로</li>
+      <li>정규화와 경계값은 학습 기간에서만 정하기</li>
+      <li>다 만들면 <code>check_no_leak</code> 통과시키기, 점수는 <code>run_cv(fit)</code>로</li>
+    </ul>
+    <p><b>버릴 것:</b> 차트 지표로 방향 맞히기, 뉴스 논조로 방향 맞히기, Reddit, 요일, 시간외 거래량.</p>
+  </section>
+
+  <section class="scene">
+    <div class="step">장면 19 · 남은 위험</div>
+    <h2>0.43이 10월에 그대로 나온다는 보장은 없다</h2>
+    <ul>
+      <li><b>달마다 흔들림:</b> 같은 규칙도 월별 점수가 0.19~0.59였어요. 10월 한 달은 운이 크게 섞여요.</li>
+      <li><b>새 종목 데이터:</b> 처음 보는 10종목에도 시간외 봉이 있다고 가정했어요. 없으면 갭을 못 재니, 갭이 없을 때 쓸 대체 규칙이 꼭 필요해요.</li>
+      <li><b>실적 시즌:</b> 10월은 실적일이 평소보다 훨씬 많아요. 실적 피처의 비중이 커져요.</li>
+      <li><b>홀드아웃은 아직 안 열었어요.</b> 모델을 확정한 뒤 한 번만 봐요.</li>
+    </ul>
+  </section>
+
+  <h2 class="part" id="faq">자주 나올 질문<small>눌러서 펼쳐 보세요</small></h2>
+  <div class="faq">
+    <details><summary>대상일 시가를 모르는데 어떻게 갭을 재요?</summary>
+      <p>시가를 쓰지 않아요. 09:30 전에 이미 체결된 마지막 시간외 가격(08:00 봉 종가, 09:00에 확정)을 써요. 시가는 "시간외 가격이 시가를 얼마나 미리 보여 주나"를 사후에 확인하는 데에만 썼어요.</p></details>
+    <details><summary>시간외 거래량이 0인데 가격을 믿어도 돼요?</summary>
+      <p>네. 거래량 칸만 비어 있고 가격은 봉마다 움직이며, 실제 개장 가격과 실적 반응을 잘 맞혀요(장면 9). 거래량 피처만 못 만들어요.</p></details>
+    <details><summary>0.43이면 모델을 안 만들어도 되는 거 아니에요?</summary>
+      <p>0.43은 바닥이에요. 지금 규칙은 "얼마나 크게 움직일지"를 갭 크기로만 판단해요. 변동성·실적·뉴스 기사량은 갭이 모르는 크기 정보를 더해 줘요. 같은 갭 3%라도 코카콜라와 인텔에게는 뜻이 달라요.</p></details>
+    <details><summary>0.20, 0.233, 0.433은 각각 뭐예요?</summary>
+      <ul><li>0.20: 기존 기준선 코드 (새벽 4시부터 잰 갭, 경계 후보 9개: |갭|의 50%~99% 위치 값)</li>
+      <li>0.233: 같은 갭, 경계 후보를 13개로 넓힘 (10%~40% 위치 값 4개 추가, 공정 비교용)</li>
+      <li>0.433: 전일 종가부터 잰 갭, 같은 13개 후보</li></ul>
+      <p>경계 후보가 무엇인지는 장면 16의 "경계 후보 9개란?" 상자에 있어요.</p></details>
+    <details><summary>EDA는 왜 2026-02까지만 봤어요? 데이터는 9월까지 있잖아요.</summary>
+      <p>검증 기간을 보고 "이 피처 좋네"라고 고르면 검증 점수가 부풀려져요. 그래서 fold4의 학습 구간까지만 봤고, 코드가 그 뒤 데이터를 아예 못 읽게 막아 뒀어요. 0.433은 그 뒤에 팀이 정한 연습 시험 절차로 잰 값이에요.</p></details>
+    <details><summary>급등락을 실제보다 훨씬 많이 찍으면 손해 아니에요?</summary>
+      <p>정답이 보합인 날은 뭘 찍어도 벌점이 0이고, 정답이 상승인데 급상승을 찍으면 벌점 1, 반대 경우는 4예요. 그래서 넉넉히 찍는 쪽이 유리해요. 단, 반대 방향으로 찍으면 64라 방향 신호가 있을 때만 세게 찍어야 해요.</p></details>
+    <details><summary>그럼 RSI·이동평균 같은 지표는 다 버려요?</summary>
+      <p>방향 예측용으로는 버려요. 다만 변동성·고저폭·20일 고점 대비는 "얼마나 움직일지"에는 강한 신호라 크기 피처로 써요.</p></details>
+    <details><summary>LLM으로 뉴스 감정 분석하면 방향을 맞힐 수 있지 않아요?</summary>
+      <p>가능성은 있지만 근거가 약해요. 시장은 뉴스를 밤사이 가격(갭)에 이미 반영해서, 실적 서프라이즈도 갭을 빼면 남는 정보가 적었어요. 비용 대비로는 "큰 사건 기사인가"를 골라 크기 신호로 쓰는 쪽이 낫다고 봐요.</p></details>
+    <details><summary>처음 보는 종목은 점수가 낮던데 괜찮아요?</summary>
+      <p>연습 시험에서 0.36 대 0.45 정도예요. 종목 구성(변동성) 차이로 보여요. 종목 이름을 안 쓰고 변동성으로 표현하면 차이를 줄일 수 있어요. 거래대금·주가 수준 같은 "규모" 피처는 새 종목에서 범위를 벗어날 수 있으니 비율이나 같은 날 순위로 바꿔 써요.</p></details>
+    <details><summary>제 피처 점수는 어떻게 내요?</summary>
+      <p><code>build(day)</code> 함수를 만들어 <code>check_no_leak(build, days)</code>를 통과시키고, <code>fit(train_days, exclude)</code>로 감싸 <code>run_cv(fit)</code>을 돌리면 폴드별 all / seen / unseen 점수가 나와요. 검증 기간이 필요해서 dev zip을 풀어 둬야 해요.</p></details>
+    <details><summary>제출할 때 주의할 건요?</summary>
+      <p>채점 때는 <code>src/model.py</code>와 <code>artifacts/</code>만 남고 나머지 <code>src/</code>는 원본으로 덮어써져요. 최종 피처 코드는 <code>src/model.py</code> 안에 있어야 해요. 채점 때 학습을 다시 돌리지 않으니 학습 결과는 <code>artifacts/</code>에 저장해요.</p></details>
+  </div>
+
+  <p class="end"><b>한 줄 요약:</b> 방향은 밤사이 가격에서, 크기는 평소 흔들림과 실적 일정에서.<br>자세한 숫자는 저장소 <code>docs/worklog/</code>의 두 보고서와 <code>docs/glossary.md</code>(용어)에 있어요.</p>
+</div>
+
+<script>
+(function(){
+  var ns='http://www.w3.org/2000/svg';
+  function el(tag,attrs,parent){var e=document.createElementNS(ns,tag);for(var k in attrs)e.setAttribute(k,attrs[k]);parent.appendChild(e);return e;}
+  var dots=document.getElementById('dots'),un=[6,7,14,20,32,35,38,39,41,47];
+  for(var i=0;i<50;i++){var u=un.indexOf(i)>=0;el('circle',{cx:40+(i%17)*31,cy:30+Math.floor(i/17)*34,r:11,fill:u?'var(--sun)':'var(--up)',opacity:u?1:.55},dots);}
+  var t=el('text',{x:40,y:140,'font-size':14,'class':'m'},dots);t.textContent='파랑 40개 = 학습에 씀 · 주황 10개 = 학습에서 뺌';
+  var g=document.getElementById('bars'),pr=[['16시',1.20],['17시',1.05],['18시',1.12],['19시',0.98],['새벽4시',1.08],['8시',1.22]];
+  pr.forEach(function(p,i){var x=110+i*80,y=200-p[1]*120;
+    if(i){el('line',{x1:110+(i-1)*80,y1:200-pr[i-1][1]*120,x2:x,y2:y,stroke:'var(--up)','stroke-width':3},g);}
+    el('circle',{cx:x,cy:y,r:8,fill:'var(--up)'},g);
+    var a=el('text',{x:x,y:214,'text-anchor':'middle','font-size':20,'class':'big'},g);a.style.fill='var(--down)';a.textContent='0';
+    var b=el('text',{x:x,y:240,'text-anchor':'middle','font-size':13,'class':'m'},g);b.textContent=p[0];});
+  var grid=document.getElementById('grid');
+  function block(x0,hot){for(var i=0;i<100;i++){var r=el('rect',{x:x0+(i%20)*12,y:20+Math.floor(i/20)*20,width:9,height:16,rx:2,fill:i<hot?'var(--down)':'var(--flat)'},grid);if(i>=hot)r.setAttribute('opacity','.35');}}
+  block(40,13);block(330,64);
+})();
+</script>

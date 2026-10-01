@@ -223,3 +223,6 @@ dataset/
 
 # 피처 캐시 (lab/cv.py)
 cache/
+
+# EDA 결과 표는 작아서 공유함 (보고서가 링크함)
+!eda/out/**/*.csv
