@@ -11,7 +11,7 @@ pytestmark = pytest.mark.skipif(not DATASET.exists(), reason="dataset/ 없음")
 @pytest.fixture(scope="module")
 def days():
     ds = Dataset()
-    return [ds.day("2025-11-14"), ds.day("2026-02-20")]     # 금요일 포함
+    return [ds.day("2025-11-14"), ds.day("2026-01-16")]     # 금요일 포함. EDA용 zip(2026-02-12까지)에도 있는 날짜
 
 
 def honest(day):
