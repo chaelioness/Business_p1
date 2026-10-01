@@ -1,0 +1,10 @@
+{
+  "var_share_open_gap": 0.3895,
+  "var_share_intraday": 0.6553,
+  "corr_open_gap_intraday": -0.04,
+  "r2_ovn_gap_to_open_gap": 0.7601,
+  "r2_ovn_gap_to_ret": 0.251,
+  "big_days_share_where_|open_gap|>1.5": 0.3805,
+  "naive_ovn_gap_score": 0.3339,
+  "naive_pre_move_score": 0.1321
+}
