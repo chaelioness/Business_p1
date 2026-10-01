@@ -345,14 +345,15 @@ code{font-size:.88em;background:var(--bg);padding:1px 5px;border-radius:5px;over
     <div class="step">장면 16 · 숫자의 출처</div>
     <h2>머신러닝 모델은 아직 하나도 안 만들었다</h2>
     <div class="tablebox"><table>
-      <thead><tr><th>숫자</th><th>정체</th><th>쓴 피처</th><th>경계를 어디서 골랐나</th></tr></thead>
+      <thead><tr><th>값</th><th>무엇으로 계산했나</th><th>찍는 규칙</th><th>쓴 피처</th><th>경계를 어디서 골랐나</th><th>채점한 데이터</th></tr></thead>
       <tbody>
-        <tr><td><b>약 30%</b></td><td>통계. 맞힌 비율 아님</td><td>—</td><td>—</td></tr>
-        <tr><td><b>0.334</b></td><td>갭을 정답 경계(±0.6, ±2.5)에 그대로 대입</td><td>ovn_gap 하나</td><td>안 고름</td></tr>
-        <tr><td><b>0.426</b></td><td>경계 두 개를 바꿔 가며 최고점 찾기</td><td>ovn_gap 하나</td><td>같은 데이터에서 (부풀려질 수 있음)</td></tr>
-        <tr><td><b>0.433</b></td><td>연습 시험 4번 평균 ← 새 기준선</td><td>ovn_gap 하나</td><td>폴드마다 학습 기간에서만</td></tr>
+        <tr><td><b>약 30%</b></td><td>점수 아님. 통계 (분산 39% × R² 0.76)</td><td>—</td><td>—</td><td>—</td><td>EDA 구간</td></tr>
+        <tr><td><b>0.334</b></td><td rowspan="3"><b>교수님 채점 함수</b><br><code>src.data.score</code></td><td>갭을 정답 경계(±0.6, ±2.5)에 그대로 대입</td><td>ovn_gap 하나</td><td>안 고름</td><td>EDA 구간 전체</td></tr>
+        <tr><td><b>0.426</b></td><td>경계 두 개를 바꿔 가며 최고점 찾기</td><td>ovn_gap 하나</td><td>채점한 데이터와 같은 곳 (부풀려질 수 있음)</td><td>EDA 구간 전체</td></tr>
+        <tr><td><b>0.433</b></td><td>연습 시험 4번 ← 새 기준선</td><td>ovn_gap 하나</td><td>폴드마다 학습 기간에서만</td><td>폴드별 검증 60일, 4개 점수의 평균</td></tr>
       </tbody>
     </table></div>
+    <p class="note">세 점수는 모두 교수님이 10월 채점에 쓰는 함수(<code>src/evaluate.py</code>가 부르는 <code>src.data.score</code>)로 계산했어요. 제가 따로 만든 점수식은 없어요. 다른 건 어떤 규칙으로 찍었고 어떤 기간을 채점했느냐뿐이에요.</p>
     <p>규칙은 간단해요: 갭이 a보다 작으면 보합, a~b면 상승/하락, b보다 크면 급등락. 기존 규칙(0.20)과 <b>절차는 똑같고 갭 재는 법만</b> 바꿨어요. 공정하게 비교하려고 경계 후보 범위까지 맞추니 기존은 0.233이었어요. 변동성·실적·뉴스는 아직 아무것도 안 넣었어요.</p>
     <div class="def">
       <p class="deft">"경계 후보 9개"란?</p>
