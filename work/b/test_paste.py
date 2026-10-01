@@ -5,8 +5,8 @@
 실제 src/model.py 는 건드리지 않는다. 임시 폴더에 src/ 와 main.py 를 복사하고,
 src/model.py 를 [features_b.py 원문 + LightGBM 래퍼] 로 바꾼 뒤
 main.py check 를 (1) 전체 종목, (2) 20종목만 보이게 해서 돌린다.
-모델은 마지막 폴드 시작 전 대상일로 학습한 V1 LightGBM (기본 파라미터, argmax).
-팀 데이터는 2026-06-01 앞까지만 있으므로 check 구간도 그 안(마지막 폴드)으로 잡는다.
+모델은 val 시작 전 대상일로 학습한 V1 LightGBM (기본 파라미터, argmax).
+팀 데이터는 2026-06-01 앞까지만 있으므로 check 구간도 그 안(val)으로 잡는다.
 """
 
 import random
@@ -21,12 +21,13 @@ HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[1]
 sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(HERE))
+sys.path.insert(0, str(ROOT / "work" / "common"))
 
 from features_b import B_FEATURES_V1  # noqa: E402
-from folds import FOLD_STARTS  # noqa: E402
+from folds import VAL_START  # noqa: E402
 from v1_check import load_b, train_lgb  # noqa: E402
 
-SPLIT = FOLD_STARTS[-1]
+SPLIT = VAL_START
 
 WRAPPER = '''
 

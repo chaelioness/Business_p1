@@ -5,7 +5,7 @@
 (a) 전부 보합  (b) gap_z 규칙  (c) sample_model RandomForest(원래 8개 피처)
 (d) LightGBM 다중분류, B 피처 전체  (e) (d) + 비용 최소 디코딩(비교용)
 
-점수는 src.data.score 를 그대로 쓴다. 폴드는 folds.py 한 곳에서 정한다.
+점수는 src.data.score 를 그대로 쓴다. train / val 은 팀 공용 work/common/folds.py. val 전체 점수가 주 지표, 월별 점수를 같이 출력.
 """
 
 import sys
@@ -20,10 +20,11 @@ ROOT = HERE.parents[1]
 sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(HERE))
 sys.path.insert(0, str(ROOT / "example"))
+sys.path.insert(0, str(ROOT / "work" / "common"))
 
 from src import FLAT, WEIGHT, Dataset, score  # noqa: E402
 from features_b import B_FEATURES  # noqa: E402
-from folds import TEST_START, folds  # noqa: E402
+from folds import TEST_START, folds, val_months  # noqa: E402
 
 CACHE = HERE / "cache"
 SEED = 0
@@ -113,15 +114,17 @@ def main():
         s_te = s[(s.target >= te.target.min()) & (s.target <= te.target.max())]
         p, n_iter, _ = lgb_proba(tr, te, B_FEATURES)
         preds = {
-            "(a) 전부 보합": (te.label, np.full(len(te), FLAT)),
-            "(b) gap_z 규칙": (te.label, rule_gap(tr, te)),
-            "(c) RF sample 8": (s_te.label, rf_sample(s_tr, s_te)),
-            "(d) LGB B 전체": (te.label, p.argmax(1)),
-            "(e) (d)+비용최소": (te.label, cost_decode(p)),
+            "(a) 전부 보합": (te.target, te.label, np.full(len(te), FLAT)),
+            "(b) gap_z 규칙": (te.target, te.label, rule_gap(tr, te)),
+            "(c) RF sample 8": (s_te.target, s_te.label, rf_sample(s_tr, s_te)),
+            "(d) LGB B 전체": (te.target, te.label, p.argmax(1)),
+            "(e) (d)+비용최소": (te.target, te.label, cost_decode(p)),
         }
-        for model, (y, pr) in preds.items():
-            r = score(y, pr)
-            rows.append({"fold": name, "model": model, **{k: r[k] for k in METRICS}, "n": r["n"]})
+        for model, (tg, y, pr) in preds.items():
+            mon, ya, pa = val_months(tg), np.asarray(y, dtype=int), np.asarray(pr, dtype=int)
+            for m in sorted(set(mon)):                      # val 안의 월별 점수
+                r = score(ya[mon == m], pa[mon == m])
+                rows.append({"fold": m, "model": model, **{k: r[k] for k in METRICS}, "n": r["n"]})
             dist.setdefault(model, []).append(np.bincount(pr, minlength=5))
             pooled.setdefault(model, []).append((np.asarray(y, dtype=int), np.asarray(pr, dtype=int)))
         print(f"{name}: 학습 {tr_m.sum():,} (대상일 ~{tr.target.max():%Y-%m-%d}) "
@@ -129,15 +132,15 @@ def main():
 
     r = pd.DataFrame(rows)
     pd.set_option("display.width", 200)
-    print("\n폴드별")
+    print("\nval 월별 score")
     print(r.pivot(index="model", columns="fold", values="score").round(4).to_string())
-    print("\n합쳐서 채점 (전체 평가 행으로 한 번 계산, 주 지표) + 폴드 평균 score")
+    print("\nval 전체 (한 번에 계산, 주 지표) + 월 평균 score")
     pool = {}
     for model, parts in pooled.items():
         sc = score(np.concatenate([y for y, _ in parts]), np.concatenate([p for _, p in parts]))
         pool[model] = {k: sc[k] for k in METRICS}
     pool = pd.DataFrame(pool).T
-    pool["폴드평균"] = r.groupby("model").score.mean()
+    pool["월평균"] = r.groupby("model").score.mean()
     print(pool.round(4).to_string())
     pool.to_csv(HERE / "cache" / "baseline_pooled.csv")
     print("\n예측 label 분포 (전체 평가, %)")
