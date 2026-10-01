@@ -1,6 +1,6 @@
 # eda/ — 금융 데이터 EDA
 
-결론과 해석은 [docs/worklog/2026-10-01_EDA_금융데이터_탐색.md](../docs/worklog/2026-10-01_EDA_금융데이터_탐색.md) 에 있음.
+결론과 해석은 [docs/worklog/2026-10-01_EDA_금융데이터_탐색.md](../docs/worklog/2026-10-01_EDA_금융데이터_탐색.md) 에 있음 (용어는 [docs/glossary.md](../docs/glossary.md)).
 이 폴더는 그 숫자와 그림을 다시 만드는 코드와 산출물.
 
 ## 실행

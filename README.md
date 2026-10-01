@@ -3,6 +3,7 @@
 Business Analytics Finance Project — 다음 거래일 방향 예측. 과제 설명은 [docs/project_overview.md](docs/project_overview.md),
 교수님 원본 README 는 [docs/course_README.md](docs/course_README.md).
 EDA 결과는 [docs/worklog/2026-10-01_EDA_금융데이터_탐색.md](docs/worklog/2026-10-01_EDA_금융데이터_탐색.md), 코드는 [eda/](eda/README.md).
+금융·통계 용어가 낯설면 [docs/glossary.md](docs/glossary.md) 부터.
 
 ## 시작
 
