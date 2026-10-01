@@ -220,3 +220,6 @@ __marimo__/
 # 과제 데이터와 로컬 산출물
 dataset/
 *.csv
+
+# 피처 캐시 (lab/cv.py)
+cache/
