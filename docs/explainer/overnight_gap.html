@@ -44,6 +44,9 @@ th{color:var(--muted);font-weight:400;font-size:13px}
 .card{background:var(--bg);border-radius:12px;padding:12px 14px;display:flex;flex-direction:column;gap:4px;min-width:0}
 .card .num{font-family:var(--display);font-size:28px;line-height:1.1;color:var(--up)}
 .card .lab{font-size:14px;color:var(--muted)}
+.def{border:1px solid var(--line);border-radius:12px;padding:14px 16px;display:flex;flex-direction:column;gap:8px;min-width:0}
+.def p{margin:0}
+.deft{font-size:13px;letter-spacing:.08em;color:var(--muted)}
 .faq{display:flex;flex-direction:column;gap:8px}
 details{background:var(--card);border-radius:14px;padding:14px 18px}
 summary{cursor:pointer;font-weight:700}
@@ -250,6 +253,20 @@ code{font-size:.88em;background:var(--bg);padding:1px 5px;border-radius:5px;over
       </g>
     </svg>
     <p>옛 자는 새벽 4시 첫 가격부터 재서, 전날 저녁에 이미 끝난 실적 반응을 놓쳐요. 새 자는 전날 종가부터 재서 +3.5%를 잡아요. <b>둘 다 9시 반 전에 아는 가격만 쓰고, 개장 가격은 쓰지 않아요.</b> 마지막으로 쓰는 봉은 08:00 봉(09:00에 닫힘)이에요. 09:00 봉은 09:30에 닫혀서 못 써요.</p>
+    <div class="def">
+      <p class="deft">정확한 정의</p>
+      <p><b>갭(gap)</b>: 두 시점 사이의 가격 변화율(%). 이 과제에서는 "기준 가격"에서 "대상일 09:30 전에 마지막으로 알 수 있는 가격"까지의 변화율이에요.</p>
+      <p><b>"자"</b>: 비유예요. 실제로는 갭을 계산할 때 쓰는 <b>기준 가격(분모)</b>을 뜻해요. 자를 어디에 대느냐 = 기준 가격을 무엇으로 하느냐.</p>
+      <div class="tablebox"><table>
+        <thead><tr><th>이름</th><th>계산식</th><th>기준 가격</th><th>끝 가격</th></tr></thead>
+        <tbody>
+          <tr><td><b>ovn_gap</b><br><span class="note">새 방법</span></td><td><code>(P_last / C_B − 1) × 100</code></td><td>C_B: 기준일 종가 (일봉 <code>close</code>, 16:00 확정)</td><td rowspan="2">P_last: 대상일 09:30 전에 닫힌 마지막 시간외 봉의 종가. 보통 대상일 08:00 프리마켓 봉 (<code>known_at</code> 09:00)</td></tr>
+          <tr><td><b>pre_move</b><br><span class="note">기존 방법</span></td><td><code>(P_last / P_first − 1) × 100</code></td><td>P_first: 대상일 프리마켓 첫 봉의 종가 (보통 04:00 봉)</td></tr>
+          <tr><td><b>시가 갭</b><br><span class="note">분석에만 씀</span></td><td><code>(O_T / C_B − 1) × 100</code></td><td>C_B: 기준일 종가</td><td>O_T: 대상일 시가 (09:30). 예측 시점에 모르므로 <b>피처로 쓰지 않음</b></td></tr>
+        </tbody>
+      </table></div>
+      <p class="note">시간외 봉 = <code>price</code> 표에서 <code>session</code>이 <code>post</code>(기준일 16:00~20:00) 또는 <code>pre</code>(대상일 04:00~09:30)인 1시간봉. "닫힌 봉" = <code>known_at</code> &lt; 대상일 09:30. 코드는 <code>eda/cv_check_ovn_gap.py</code>의 <code>build_ovn_gap(day)</code>예요.</p>
+    </div>
   </section>
 
   <section class="scene">
