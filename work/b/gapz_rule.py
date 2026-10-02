@@ -14,7 +14,7 @@
     |s| 분위 후보 중 train score 최대인 경계 a < b
     s ≥ b → 4 / s ≥ a → 3 / s ≤ −a → 1 / s ≤ −b → 0 / 그 밖·결측 → 2
 
-A 폴드(lab/folds.json) 4폴드 평균 score 0.444 (gap_z 규칙만 0.438, 원래 갭 규칙 0.423).
+A 폴드(lab/folds.json) 4폴드 평균 score 0.447 (gap_z 규칙만 0.444, 원래 갭 규칙 0.433 = eda/cv_check_ovn_gap.py).
 """
 
 import json
@@ -23,7 +23,7 @@ import numpy as np
 import pandas as pd
 
 CLOSE = pd.Timedelta(hours=16)
-QS = [.5, .6, .7, .8, .85, .9, .95, .975, .99]      # 경계 후보 분위
+QS = [.1, .2, .3, .4, .5, .6, .7, .8, .85, .9, .95, .975, .99]   # 경계 후보 분위 (eda/cv_check_ovn_gap.py 와 같음)
 LAMS = [0.0, 0.05, 0.1, 0.15, 0.2, 0.3, 0.4, 0.5]   # λ 후보
 _LV = np.arange(5)
 WEIGHT = ((_LV[:, None] - _LV[None, :]) ** 2) * (np.abs(_LV - 2)[:, None] ** 2)   # src.data.WEIGHT 와 같음

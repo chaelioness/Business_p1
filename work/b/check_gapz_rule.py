@@ -1,4 +1,4 @@
-"""gapz_rule.py 확인 — 실험 결과(4폴드 0.444)가 그대로 나오는지, 피처 값이 실험 표와 같은지, 누수가 없는지.
+"""gapz_rule.py 확인 — 실험 결과(4폴드 0.447)가 그대로 나오는지, 피처 값이 실험 표와 같은지, 누수가 없는지.
 
     uv run python work/b/check_gapz_rule.py
 """
@@ -60,7 +60,7 @@ def main():
                      "λ": prm["lam"], "a": round(prm["a"], 3), "b": round(prm["b"], 3)})
     r = pd.DataFrame(rows).set_index("fold")
     print("\n", r.round(4).to_string())
-    print(f"4폴드 평균 {r.score.mean():.4f} (실험 결과 0.4437), unseen {r.unseen.mean():.4f}")
+    print(f"4폴드 평균 {r.score.mean():.4f} (기대값 0.4469), unseen {r.unseen.mean():.4f}")
 
     # 5) predict(day) 형태 확인
     day = folds[3].val[0]

@@ -9,6 +9,7 @@
 | **[`minyoung_features.md`](minyoung_features.md)** | 고른 피처, 추출 방식, 결측, 선택 이유, 시도한 피처 102개 |
 | **[`gapz_rule.py`](gapz_rule.py)** | 전달용 코드. 피처 계산 · 학습 · 예측 한 파일 (numpy, pandas 만) |
 | [`check_gapz_rule.py`](check_gapz_rule.py) | `gapz_rule.py` 확인 (피처 값, 누수, A 폴드 점수 재현) |
+| [`check_rules.py`](check_rules.py) | 팀 피처 규칙 1~8 확인 (누수 검사, 모양, 종목 ID, train 에서만 fit, `src/model.py` 붙여 넣고 `main.py check`) |
 
 ## B 결론
 
@@ -16,8 +17,15 @@
   - `gap_z` = 시간외 갭 ÷ 20일 변동성 (방향 정보의 거의 전부)
   - `ext_range_z` = 시간외 고저 폭 ÷ 20일 변동성 (많이 출렁인 갭은 덜 믿음)
 - 결측률 둘 다 0.22% (2026-01-30 하루, 원본 시간외 봉 누락)
-- **기준 점수: gap_z 규칙 + ext_range_z = 4폴드 평균 0.444** (fold4 0.4995, 처음 보는 종목 0.352)
+- **기준 점수: gap_z 규칙 + ext_range_z = 4폴드 평균 0.447** (fold4 0.515, 처음 보는 종목 0.363)
+  - 재은님 기준선(전일 종가 기준 시간외 갭 규칙, `eda/cv_check_ovn_gap.py`) 0.433 과 같은 경계 후보·같은 폴드로 비교
   - 베이스라인 모델이 이 점수를 넘는지 비교해 주세요.
+
+| 규칙 (A 폴드, 경계 후보 .1~.99) | fold1 | fold2 | fold3 | fold4 | 평균 |
+|---|---:|---:|---:|---:|---:|
+| 원래 갭 (재은님 기준선) | 0.423 | 0.404 | 0.391 | 0.511 | 0.433 |
+| gap_z | 0.433 | 0.431 | 0.401 | 0.512 | 0.444 |
+| **gap_z + ext_range_z** | **0.434** | **0.436** | **0.402** | **0.515** | **0.447** |
 
 ## 쓰는 법
 
@@ -47,7 +55,7 @@ pred = G.predict(day, G.load("artifacts/gapz_rule.json"))   # symbol, label (0~4
 ```bash
 uv run python work/b/check_gapz_rule.py
 ```
-피처 값이 실험 표와 같은지(차이 1e-13 이하), score 가 `src.score` 와 같은지, A 폴드 4폴드 평균 0.4437 이 나오는지 출력함.
+피처 값이 실험 표와 같은지(차이 1e-13 이하), score 가 `src.score` 와 같은지, A 폴드 4폴드 평균 0.4469 가 나오는지 출력함.
 
 ## 그 밖의 파일 (B 내부용)
 
