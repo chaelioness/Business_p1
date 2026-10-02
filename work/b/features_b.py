@@ -254,6 +254,89 @@ def build_b(day):
     return pd.concat([x[["symbol"]], num], axis=1)
 
 
+# ---------------------------------------------------------------- 추가 후보 (2026-10-02 실험용)
+
+B_EXTRA_HIST_DAYS = 900     # 과거 실적 반응을 볼 달력일 (일봉이 2023-10 부터 있음)
+B_EXTRA = [
+    # 크기
+    "earn_hist_absr",   # 이 종목의 이전 실적 발표 다음날 |ret| 평균 (%) — 이번 발표 전 것만
+    "earn_timing",      # 밤사이 실적 발표: 0 없음 / 1 개장 전 / 2 장 마감 후
+    "absret1_z",        # 기준일 |ret| ÷ vol60
+    "big_yday",         # 기준일 |ret| > 2.5%
+    "bigfreq20",        # 최근 20일 급등락 비율
+    "mkt_absgap",       # 그날 보이는 종목들의 |gap_z| 평균 (밤사이 시장 요동)
+    "gap_disp",         # 그날 종목 간 gap_z 표준편차
+    # 방향
+    "gap_onz",          # gap ÷ 과거 60일 밤사이 수익률(시가/전일 종가) 표준편차
+    "gap_rank",         # 그날 보이는 종목 중 gap_z 백분위 (0~1)
+    "pre_late",         # 대상일 마지막 pre 봉 2개의 움직임 ÷ vol20
+    "ext_pos",          # 시간외 최고·최저 사이 마지막 가격 위치 (0~1)
+]
+
+
+def build_b_extra(day):
+    """B_EXTRA 후보. build_b 와 같은 규칙 (day.* 로만 읽음, cutoff 전, 종목 ID 없음)."""
+    d = day.daily(since=day.date - pd.Timedelta(days=B_EXTRA_HIST_DAYS),
+                  columns=["symbol", "date_et", "open", "close", "ret"])
+    if not len(d) or pd.Timestamp(d.date_et.max()) != day.date:
+        return pd.DataFrame(columns=["symbol", *B_EXTRA])
+    O = d.pivot_table(index="date_et", columns="symbol", values="open", aggfunc="last").sort_index()
+    C = d.pivot_table(index="date_et", columns="symbol", values="close", aggfunc="last").sort_index()
+    R = d.pivot_table(index="date_et", columns="symbol", values="ret", aggfunc="last").sort_index()
+    last = R.index[-1]
+    vol20 = R.rolling(20, min_periods=10).std().loc[last]
+    vol60 = R.rolling(60, min_periods=30).std().loc[last]
+    ovn_sd = (O / C.shift() - 1).rolling(60, min_periods=30).std().loc[last]
+    r1 = R.loc[last]
+    out = pd.DataFrame(index=pd.Index(R.columns, name="symbol"))
+    out["absret1_z"] = r1.abs() / vol60
+    out["big_yday"] = (r1.abs() > B_BIG).astype(float).where(r1.notna())
+    out["bigfreq20"] = (R.abs() > B_BIG).astype(float).where(R.notna()).rolling(20, min_periods=10).mean().loc[last]
+
+    # 시간외: 기준일 16:00 이후 post/pre 봉 (build_b 와 같은 창)
+    p = day.price(since=day.date, columns=["symbol", "datetime", "open", "high", "low", "close", "session"])
+    ext = p[(p.datetime >= day.date + B_CLOSE) & p.session.isin(["post", "pre"])].sort_values("datetime")
+    g = ext.groupby("symbol")
+    close0 = C.loc[last]
+    gap = g.close.last() / close0 - 1
+    gap_z = gap / vol20
+    out["gap_onz"] = gap / ovn_sd
+    out["gap_rank"] = gap_z.rank(pct=True)
+    out["mkt_absgap"] = gap_z.abs().mean()
+    out["gap_disp"] = gap_z.std()
+    hi, lo = g.high.max(), g.low.min()
+    out["ext_pos"] = ((g.close.last() - lo) / (hi - lo)).where(hi > lo)
+    pre = ext[(ext.session == "pre") & (ext.datetime.dt.normalize() == day.target)]
+    late = pre.groupby("symbol").tail(2).groupby("symbol")
+    out["pre_late"] = (late.close.last() / late.open.first() - 1) / vol20
+
+    # 실적: 이번 발표 시각, 이전 발표들의 다음날 반응 크기
+    e = day.earnings(since=day.date - pd.Timedelta(days=B_EXTRA_HIST_DAYS), columns=["symbol", "known_at"])
+    after = day.date + B_CLOSE
+    now = e[e.known_at >= after]
+    hm = now.known_at.dt.hour * 60 + now.known_at.dt.minute
+    timing = pd.Series(np.where(hm >= 16 * 60, 2.0, 1.0), index=now.symbol.values).groupby(level=0).max()
+    out["earn_timing"] = timing.reindex(out.index).fillna(0.0)
+    past = e[e.known_at < after]
+    days_idx = R.index.values
+    react = []
+    for sym, kt in zip(past.symbol, past.known_at):
+        d0 = np.datetime64(kt.normalize())
+        k = np.searchsorted(days_idx, d0, side="right" if kt.hour * 60 + kt.minute >= 9 * 60 + 30 else "left")
+        if k < len(days_idx) and sym in R.columns:
+            v = R.iat[k, R.columns.get_loc(sym)]
+            if v == v:
+                react.append((sym, abs(v) * 100))
+    if react:
+        rr = pd.DataFrame(react, columns=["symbol", "absr"]).groupby("symbol").absr.agg(["mean", "size"])
+        out["earn_hist_absr"] = rr["mean"].where(rr["size"] >= 2).reindex(out.index)
+    else:
+        out["earn_hist_absr"] = np.nan
+    out = out.reset_index()[["symbol", *B_EXTRA]]
+    num = out[B_EXTRA].astype(float).replace([np.inf, -np.inf], np.nan)
+    return pd.concat([out[["symbol"]], num], axis=1)
+
+
 def build_b_table(days, with_label=True, verbose=True):
     """여러 날을 쌓는다. with_label 이면 day.y 의 label, ret_pct 를 붙임(학습용)."""
     rows = []
