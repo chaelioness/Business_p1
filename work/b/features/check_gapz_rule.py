@@ -1,6 +1,6 @@
 """gapz_rule.py 확인 — 실험 결과(4폴드 0.447)가 그대로 나오는지, 피처 값이 실험 표와 같은지, 누수가 없는지.
 
-    uv run python work/b/check_gapz_rule.py
+    uv run python work/b/features/check_gapz_rule.py
 """
 
 import sys
@@ -10,9 +10,9 @@ import numpy as np
 import pandas as pd
 
 HERE = Path(__file__).resolve().parent
-sys.path.insert(0, str(HERE.parents[1]))
+sys.path.insert(0, str(HERE.parents[2]))
 sys.path.insert(0, str(HERE))
-sys.path.insert(0, str(HERE / "exp"))
+sys.path.insert(0, str(HERE.parent / "exp"))
 
 from src import score as src_score  # noqa: E402
 from lab.cv import feature_table  # noqa: E402

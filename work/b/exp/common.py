@@ -11,7 +11,7 @@ import pandas as pd
 
 BDIR = Path(__file__).resolve().parents[1]      # work/b
 ROOT = BDIR.parents[1]                          # 저장소 루트
-for p in (str(ROOT), str(BDIR), str(Path(__file__).resolve().parent)):
+for p in (str(ROOT), str(BDIR / "features"), str(Path(__file__).resolve().parent)):
     if p not in sys.path:
         sys.path.insert(0, p)
 

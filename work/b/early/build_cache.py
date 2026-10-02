@@ -1,7 +1,7 @@
 """전체 기준일의 B 피처를 캐시로 저장한다.
 
-    uv run python work/b/build_cache.py            # 이어서 돌림
-    uv run python work/b/build_cache.py --force    # 처음부터
+    uv run python work/b/early/build_cache.py            # 이어서 돌림
+    uv run python work/b/early/build_cache.py --force    # 처음부터
 
 월 단위로 work/b/cache/parts/YYYY-MM.parquet 에 저장하고, 있으면 건너뛴다.
 대상일이 TEST_START(2026-06-01) 이후인 날은 만들지 않는다 (팀 최종 테스트 구간).
@@ -16,15 +16,16 @@ from pathlib import Path
 import pandas as pd
 
 HERE = Path(__file__).resolve().parent
-sys.path.insert(0, str(HERE.parents[1]))
+sys.path.insert(0, str(HERE.parents[2]))
 sys.path.insert(0, str(HERE))
-sys.path.insert(0, str(HERE.parents[1] / "work" / "common"))
+sys.path.insert(0, str(HERE.parent / "features"))
+sys.path.insert(0, str(HERE.parents[2] / "work" / "common"))
 
 from src import Dataset  # noqa: E402
 from features_b import build_b_table  # noqa: E402
 from folds import TEST_START  # noqa: E402
 
-CACHE = HERE / "cache"
+CACHE = HERE.parent / "cache"
 OUT = CACHE / "b_features.parquet"
 
 

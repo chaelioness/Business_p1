@@ -1,6 +1,6 @@
 """features_b.py 를 model.py 에 그대로 붙여 넣어도 도는지 시험한다.
 
-    uv run python work/b/test_paste.py <임시 폴더>
+    uv run python work/b/early/test_paste.py <임시 폴더>
 
 실제 src/model.py 는 건드리지 않는다. 임시 폴더에 src/ 와 main.py 를 복사하고,
 src/model.py 를 [features_b.py 원문 + LightGBM 래퍼] 로 바꾼 뒤
@@ -18,9 +18,10 @@ from pathlib import Path
 import pandas as pd
 
 HERE = Path(__file__).resolve().parent
-ROOT = HERE.parents[1]
+ROOT = HERE.parents[2]
 sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(HERE))
+sys.path.insert(0, str(HERE.parent / "features"))
 sys.path.insert(0, str(ROOT / "work" / "common"))
 
 from features_b import B_FEATURES_V1  # noqa: E402
@@ -65,7 +66,7 @@ def main():
     shutil.copy(ROOT / "main.py", out / "main.py")
     (out / "artifacts").mkdir()
 
-    src = (HERE / "features_b.py").read_text(encoding="utf-8")
+    src = (HERE.parent / "features" / "features_b.py").read_text(encoding="utf-8")
     (out / "src" / "model.py").write_text('"""붙여 넣기 시험용 model.py."""\n\n' + src + WRAPPER,
                                           encoding="utf-8")
 

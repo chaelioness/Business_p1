@@ -1,6 +1,6 @@
 """B 피처 베이스라인 비교 (walk-forward).
 
-    uv run python work/b/b_baseline.py
+    uv run python work/b/early/b_baseline.py
 
 (a) 전부 보합  (b) gap_z 규칙  (c) sample_model RandomForest(원래 8개 피처)
 (d) LightGBM 다중분류, B 피처 전체  (e) (d) + 비용 최소 디코딩(비교용)
@@ -16,9 +16,10 @@ import numpy as np
 import pandas as pd
 
 HERE = Path(__file__).resolve().parent
-ROOT = HERE.parents[1]
+ROOT = HERE.parents[2]
 sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(HERE))
+sys.path.insert(0, str(HERE.parent / "features"))
 sys.path.insert(0, str(ROOT / "example"))
 sys.path.insert(0, str(ROOT / "work" / "common"))
 
@@ -26,7 +27,7 @@ from src import FLAT, WEIGHT, Dataset, score  # noqa: E402
 from features_b import B_FEATURES  # noqa: E402
 from folds import TEST_START, folds, val_months  # noqa: E402
 
-CACHE = HERE / "cache"
+CACHE = HERE.parent / "cache"
 SEED = 0
 VALID_DAYS = 40            # 조기 종료용: 학습 구간의 마지막 40 기준일
 LGB_PARAMS = dict(objective="multiclass", num_class=5, learning_rate=0.05,
@@ -142,14 +143,14 @@ def main():
     pool = pd.DataFrame(pool).T
     pool["월평균"] = r.groupby("model").score.mean()
     print(pool.round(4).to_string())
-    pool.to_csv(HERE / "cache" / "baseline_pooled.csv")
+    pool.to_csv(HERE.parent / "cache" / "baseline_pooled.csv")
     print("\n예측 label 분포 (전체 평가, %)")
     d = pd.DataFrame({k: np.sum(v, axis=0) for k, v in dist.items()}).T
     print((d.div(d.sum(1), axis=0) * 100).round(1).to_string())
     print("\n실제 label 분포 (평가, %)")
     all_te = np.concatenate([b[m].label.values for _, _, m in folds(targets=b.target)])
     print((np.bincount(all_te, minlength=5) / len(all_te) * 100).round(1))
-    r.to_csv(HERE / "cache" / "baseline_results.csv", index=False)
+    r.to_csv(HERE.parent / "cache" / "baseline_results.csv", index=False)
 
 
 if __name__ == "__main__":

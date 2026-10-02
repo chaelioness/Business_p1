@@ -2,14 +2,23 @@
 
 담당 민영. 평가는 재은님 폴드(`lab/folds.json`) 기준.
 
-## 팀원이 볼 것 (이것만)
+```
+work/b/
+├─ features/   ← 팀원이 볼 것: 고른 피처, 전달용 코드, 확인 스크립트
+├─ eda/        B 데이터 EDA: 노트북 3개, 그림, 보고서
+├─ exp/        피처 실험 r01 ~ r12 (1~12차) 와 결과 기록
+└─ early/      초기 작업 (A 폴드 이전, B 홀드아웃 기준 베이스라인·V1 점검)
+```
+
+## 팀원이 볼 것 — `features/`
 
 | 파일 | 내용 |
 |---|---|
-| **[`minyoung_features.md`](minyoung_features.md)** | 고른 피처, 추출 방식, 결측, 선택 이유, 시도한 피처 102개 |
-| **[`gapz_rule.py`](gapz_rule.py)** | 전달용 코드. 피처 계산 · 학습 · 예측 한 파일 (numpy, pandas 만) |
-| [`check_gapz_rule.py`](check_gapz_rule.py) | `gapz_rule.py` 확인 (피처 값, 누수, A 폴드 점수 재현) |
-| [`check_rules.py`](check_rules.py) | 팀 피처 규칙 1~8 확인 (누수 검사, 모양, 종목 ID, train 에서만 fit, `src/model.py` 붙여 넣고 `main.py check`) |
+| **[`features/minyoung_features.md`](features/minyoung_features.md)** | 고른 피처, 추출 방식, 결측, 선택 이유, 시도한 피처 102개, 팀 피처 규칙 확인 |
+| **[`features/gapz_rule.py`](features/gapz_rule.py)** | 전달용 코드. 피처 계산 · 학습 · 예측 한 파일 (numpy, pandas 만) |
+| [`features/check_gapz_rule.py`](features/check_gapz_rule.py) | `gapz_rule.py` 확인 (피처 값, 누수, A 폴드 점수 재현) |
+| [`features/check_rules.py`](features/check_rules.py) | 팀 피처 규칙 1~8 확인 (누수 검사, 모양, 종목 ID, train 에서만 fit, `src/model.py` 붙여 넣고 `main.py check`) |
+| [`features/features_b.py`](features/features_b.py) | B 피처 61개 전체 `build_b(day)`, 추가 후보 11개 `build_b_extra(day)` |
 
 ## B 결론
 
@@ -32,7 +41,7 @@
 ### 피처만 (모델에 넣을 때)
 ```python
 import sys
-sys.path.insert(0, "work/b")                     # work/b 는 패키지가 아니라서 경로로 추가
+sys.path.insert(0, "work/b/features")            # 패키지가 아니라서 경로로 추가
 from gapz_rule import build_gapz
 from lab.cv import feature_table
 
@@ -53,18 +62,15 @@ pred = G.predict(day, G.load("artifacts/gapz_rule.json"))   # symbol, label (0~4
 
 ### 확인
 ```bash
-uv run python work/b/check_gapz_rule.py
+uv run python work/b/features/check_gapz_rule.py    # A 폴드 4폴드 평균 0.4469 재현
+uv run python work/b/features/check_rules.py        # 팀 피처 규칙 1~8
 ```
-피처 값이 실험 표와 같은지(차이 1e-13 이하), score 가 `src.score` 와 같은지, A 폴드 4폴드 평균 0.4469 가 나오는지 출력함.
 
-## 그 밖의 파일 (B 내부용)
+## 그 밖의 폴더
 
-| 파일 | 내용 |
+| 폴더 | 내용 |
 |---|---|
-| `features_b.py` | B 피처 61개 전체 `build_b(day)`, 추가 후보 11개 `build_b_extra(day)` |
-| `exp/` | 피처 실험 코드 r01 ~ r12 와 공용 코드 (`exp/README.md`) |
-| `exp/results.md` | 피처 실험 1~12차 전체 기록 |
-| `b_baseline.py`, `v1_check.py`, `score_compare.py`, `feature_candidates.md` | 초기 베이스라인·V1 점검·규칙 비교·추가 후보 목록 |
-| `test_leak.py`, `test_paste.py` | 누수 검사, `src/model.py` 붙여 넣기 검사 |
-| `01~03_b_eda*.ipynb`, `figs/`, `REPORT_b_eda.md` | EDA |
-| `cache/` | 실험 중간 결과 (다시 만들 수 있음) |
+| [`eda/`](eda/) | `01~03_b_eda*.ipynb`, `figs/`(발표용 그림 01~10), `REPORT_b_eda.md`, `score_compare.py`(그림 10) |
+| [`exp/`](exp/) | 피처 실험 r01 ~ r12, 공용 코드 `common.py` · `builders.py`, 결과 기록 `results.md` (목록은 `exp/README.md`) |
+| [`early/`](early/) | `b_baseline.py`(첫 베이스라인 비교), `v1_check.py`(V1 26개 점검), `build_cache.py`, `test_leak.py`, `test_paste.py`, `feature_candidates.md`(실험 전 후보 목록). `work/common/folds.py`(B 홀드아웃) 기준 |
+| `cache/` | 실험 중간 결과 (git 에 안 올림, 다시 만들 수 있음) |

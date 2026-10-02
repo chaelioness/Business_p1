@@ -1,8 +1,8 @@
 """2단계: B_FEATURES_V1 점검.
 
-    uv run python work/b/v1_check.py diag      # LightGBM 보합 쏠림 원인 비교 + V1 점수
-    uv run python work/b/v1_check.py holdout   # 학습에 없던 종목 10개로 평가
-    uv run python work/b/v1_check.py universe  # 20종목만 보일 때 시장 평균 피처 변화
+    uv run python work/b/early/v1_check.py diag      # LightGBM 보합 쏠림 원인 비교 + V1 점수
+    uv run python work/b/early/v1_check.py holdout   # 학습에 없던 종목 10개로 평가
+    uv run python work/b/early/v1_check.py universe  # 20종목만 보일 때 시장 평균 피처 변화
 
 점수는 src.data.score 그대로. train / val 은 팀 공용 work/common/folds.py.
 val 전체를 한 번에 낸 점수가 주 지표이고, val 안의 월별 점수를 같이 출력한다.
@@ -17,16 +17,17 @@ import numpy as np
 import pandas as pd
 
 HERE = Path(__file__).resolve().parent
-ROOT = HERE.parents[1]
+ROOT = HERE.parents[2]
 sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(HERE))
+sys.path.insert(0, str(HERE.parent / "features"))
 sys.path.insert(0, str(ROOT / "work" / "common"))
 
 from src import Dataset, score  # noqa: E402
 from features_b import B_FEATURES, B_FEATURES_V1, build_b_table  # noqa: E402
 from folds import TEST_START, VAL_START, folds, val_months  # noqa: E402
 
-CACHE = HERE / "cache"
+CACHE = HERE.parent / "cache"
 SEED = 0
 VALID_DAYS = 40
 METRICS = ["score", "accuracy", "direction", "big_recall", "big_prec"]

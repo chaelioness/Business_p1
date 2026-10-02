@@ -23,14 +23,14 @@
 
 재현:
 ```
-uv run python work/b/build_cache.py         # 피처 캐시 (약 2분)
+uv run python work/b/early/build_cache.py         # 피처 캐시 (약 2분)
 uv run python work/common/make_split_data.py <train 원본 폴더>   # train 전용 원본 + 캐시 나누기
-uv run python work/b/test_leak.py           # 누수 검사
-uv run python work/b/b_baseline.py          # 베이스라인
-uv run python work/b/v1_check.py diag       # LightGBM 변형 비교
-uv run python work/b/v1_check.py holdout    # 처음 보는 종목
-uv run python work/b/v1_check.py universe   # 20종목만 보일 때
-uv run python work/b/test_paste.py <임시폴더>  # model.py 붙여 넣기 시험
+uv run python work/b/early/test_leak.py           # 누수 검사
+uv run python work/b/early/b_baseline.py          # 베이스라인
+uv run python work/b/early/v1_check.py diag       # LightGBM 변형 비교
+uv run python work/b/early/v1_check.py holdout    # 처음 보는 종목
+uv run python work/b/early/v1_check.py universe   # 20종목만 보일 때
+uv run python work/b/early/test_paste.py <임시폴더>  # model.py 붙여 넣기 시험
 ```
 
 ## 1. 베이스라인 (val 2026-03~05)
@@ -103,7 +103,7 @@ uv run python work/b/test_paste.py <임시폴더>  # model.py 붙여 넣기 시�
 
 # EDA (train 전체, 2026-10-01)
 
-노트북: `work/b/01_b_eda.ipynb` (실행 결과 포함), 그림 `work/b/figs/`, 신호 표 `work/b/cache/eda_signal_summary.csv`.
+노트북: `work/b/eda/01_b_eda.ipynb` (실행 결과 포함), 그림 `work/b/eda/figs/`, 신호 표 `work/b/cache/eda_signal_summary.csv`.
 **EDA 구간 = train 전체** (대상일 2024-08-14 ~ 2026-02-12, 376일, 18,800행). 원본은 train 전용 `dataset_train/` (val·embargo·테스트가 파일에 없음),
 피처는 `b_features_train.parquet` (train 폴더로 다시 만든 피처와 18,800행 전부 동일함을 확인).
 
@@ -179,7 +179,7 @@ val 점수 (2026-03~05):
 - EDA 기준 목록이 argmax −0.011, 분포맞춤 −0.013, 3개월 모두 낮음.
 - **결론: `B_FEATURES_V1` 은 그대로 둠.** 빼는 후보는 신호가 약하지만 모델 안에서는 조금 도움이 되고, 새로 통과한 4개는 보탬이 안 됨.
 
-## 5. 그림 (`work/b/figs/`, 발표용)
+## 5. 그림 (`work/b/eda/figs/`, 발표용)
 
 | 파일 | 내용 | 핵심 수치 |
 |---|---|---|
@@ -193,7 +193,7 @@ val 점수 (2026-03~05):
 
 # EDA 보강: earnings · analyst 심화 + news · reddit 간단히 (train 전체, 2026-10-01)
 
-노트북: `work/b/02_b_eda_extra.ipynb`. 구간·원본은 위 EDA 와 같음 (train 전체, `dataset_train/`).
+노트북: `work/b/eda/02_b_eda_extra.ipynb`. 구간·원본은 위 EDA 와 같음 (train 전체, `dataset_train/`).
 "밤사이 창" = 기준일 16:00 ~ 대상일 09:30.
 
 ## 1. earnings (B)
@@ -250,7 +250,7 @@ val 점수 (2026-03~05):
 
 # 데이터 자체 EDA (train 전체, 2026-10-01)
 
-노트북: `work/b/03_b_eda_data.ipynb`, 그림 `figs/06~08`. 데이터는 팀 데이터(449일)에 **train 창**을 씌워 봄:
+노트북: `work/b/eda/03_b_eda_data.ipynb`, 그림 `figs/06~08`. 데이터는 팀 데이터(449일)에 **train 창**을 씌워 봄:
 `from folds import train_dataset; ds = train_dataset()` (`work/common/folds.py`) — 모든 표를 train 마지막 대상일 16:00 까지만 돌려줌.
 `dataset_train/` 폴더와 결과 동일(행 수·피처 차이 0)이라 **파일을 따로 만들지 않아도 됨**. 평가할 날은 `val_days(Dataset())`.
 

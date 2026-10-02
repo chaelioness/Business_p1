@@ -1,6 +1,6 @@
 """B 피처 누수 검사.
 
-    uv run python work/b/test_leak.py
+    uv run python work/b/early/test_leak.py
 
 임의의 기준일 5개에서 두 가지를 확인한다.
 1. 감시 래퍼: day.daily/price/earnings/analyst 가 돌려준 모든 행이 known_at < cutoff 이고,
@@ -16,9 +16,10 @@ import numpy as np
 import pandas as pd
 
 HERE = Path(__file__).resolve().parent
-sys.path.insert(0, str(HERE.parents[1]))
+sys.path.insert(0, str(HERE.parents[2]))
 sys.path.insert(0, str(HERE))
-sys.path.insert(0, str(HERE.parents[1] / "work" / "common"))
+sys.path.insert(0, str(HERE.parent / "features"))
+sys.path.insert(0, str(HERE.parents[2] / "work" / "common"))
 
 from src import Dataset  # noqa: E402
 from features_b import B_FEATURES, build_b  # noqa: E402

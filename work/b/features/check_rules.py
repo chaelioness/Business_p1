@@ -1,6 +1,6 @@
 """gapz_rule.py 가 팀 피처 규칙 8개를 지키는지 확인.
 
-    uv run python work/b/check_rules.py
+    uv run python work/b/features/check_rules.py
 
 1·3·4·8  check_no_leak 으로 build_gapz, predict 를 여러 날 돌림 (cutoff 이후 조회, day.y, Reddit score 쓰면 LeakError)
          + ds.table / day.y / reddit 를 코드에서 직접 부르는지 소스 검사
@@ -22,7 +22,7 @@ import numpy as np
 import pandas as pd
 
 HERE = Path(__file__).resolve().parent
-ROOT = HERE.parents[1]
+ROOT = HERE.parents[2]
 sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(HERE))
 

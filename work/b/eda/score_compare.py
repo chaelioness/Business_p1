@@ -1,6 +1,6 @@
 """간단한 규칙들의 val 점수 비교 그림 → figs/10_score_compare.png
 
-    uv run python work/b/score_compare.py
+    uv run python work/b/eda/score_compare.py
 
 - 전부 보합: 한 칸만 계속 찍으면 정확히 0점
 - 어제 따라가기: 기준일(어제) 수익률의 등급을 그대로 찍음
@@ -23,7 +23,7 @@ import pandas as pd  # noqa: E402
 from matplotlib import font_manager  # noqa: E402
 
 HERE = Path(__file__).resolve().parent
-ROOT = HERE.parents[1]
+ROOT = HERE.parents[2]
 sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(HERE))
 sys.path.insert(0, str(ROOT / "work" / "common"))
@@ -31,7 +31,7 @@ sys.path.insert(0, str(ROOT / "work" / "common"))
 from src import label_of, score  # noqa: E402
 from folds import split  # noqa: E402
 
-CACHE, FIGS = HERE / "cache", HERE / "figs"
+CACHE, FIGS = HERE.parent / "cache", HERE / "figs"
 
 
 def rule(tr, te, col):

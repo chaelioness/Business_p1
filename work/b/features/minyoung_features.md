@@ -50,7 +50,7 @@ vol20      = 최근 20거래일 일간 수익률 표준편차
 gap_z      = gap ÷ vol20
 ext_range_z = (시간외 봉 최고가 − 최저가) ÷ 기준일 종가 ÷ vol20
 ```
-코드: `work/b/gapz_rule.py` 의 `build_gapz(day)` (전달용, 두 피처만). `features_b.py` 의 `build_b(day)` 에도 같은 값이 들어 있음.
+코드: `work/b/features/gapz_rule.py` 의 `build_gapz(day)` (전달용, 두 피처만). `work/b/features/features_b.py` 의 `build_b(day)` 에도 같은 값이 들어 있음.
 
 ### 결측
 | 피처 | 결측률 | 결측 행 (A 폴드 전체 22,450행) |
@@ -163,7 +163,7 @@ s ≥ b → 4 급상승 / s ≥ a → 3 상승 / s ≤ −a → 1 하락 / s ≤
 
 ---
 
-## 5. 팀 피처 규칙 확인 (`work/b/check_rules.py`)
+## 5. 팀 피처 규칙 확인 (`work/b/features/check_rules.py`)
 
 | 규칙 | 확인 방법 | 결과 |
 |---|---|---|
@@ -186,7 +186,7 @@ s ≥ b → 4 급상승 / s ≥ a → 3 상승 / s ≤ −a → 1 하락 / s ≤
   확인해 볼 질문: 뉴스 없이 혼자 튄 갭이 뉴스 있는 갭보다 더 많이 되돌려지는가.
 
 ## 참고 파일
-- **전달용 코드: `work/b/gapz_rule.py`** — 피처 계산·학습·예측 한 파일 (numpy, pandas 만, `src/model.py` 에 붙여 넣기 가능). 확인: `work/b/check_gapz_rule.py`(점수 재현), `work/b/check_rules.py`(팀 피처 규칙)
-- 피처 코드: `work/b/features_b.py` (`build_b`, `build_b_extra`), 새 피처: `work/b/exp/builders.py`(b_v3, b_v4, 과거 결과 피처), `work/b/exp/common.py`(new_*)
+- **전달용 코드: `work/b/features/gapz_rule.py`** — 피처 계산·학습·예측 한 파일 (numpy, pandas 만, `src/model.py` 에 붙여 넣기 가능). 확인: `work/b/features/check_gapz_rule.py`(점수 재현), `work/b/features/check_rules.py`(팀 피처 규칙)
+- 피처 코드: `work/b/features/features_b.py` (`build_b`, `build_b_extra`), 새 피처: `work/b/exp/builders.py`(b_v3, b_v4, 과거 결과 피처), `work/b/exp/common.py`(new_*)
 - 실험 기록: `work/b/exp/results.md` (1~12차 전체 표)
 - 실험 코드: `work/b/exp/` (r01 ~ r12, 차수별 한 파일. 목록은 `work/b/exp/README.md`)

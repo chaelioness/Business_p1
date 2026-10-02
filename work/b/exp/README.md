@@ -1,6 +1,6 @@
 # work/b/exp — B 피처 실험 (A 폴드 기준)
 
-결과 전체는 [`results.md`](results.md), 최종 정리는 [`../minyoung_features.md`](../minyoung_features.md).
+결과 전체는 [`results.md`](results.md), 최종 정리는 [`../features/minyoung_features.md`](../features/minyoung_features.md).
 실험은 경계 후보 분위 .5~.99 로 돌림 (gap_z 규칙 0.438). 최종 전달값은 재은님 기준선과 같은 .1~.99 후보로 다시 낸 것 (0.447).
 실행은 저장소 루트에서 `uv run python work/b/exp/<파일>.py`. 결과 csv 는 `work/b/cache/` 에 저장됨.
 
