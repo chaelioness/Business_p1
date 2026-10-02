@@ -16,7 +16,11 @@ dependencies = [
 
 [dependency-groups]
 dev = [
+    "lightgbm>=4.7.0",
+    "openai>=3.23.0",
     "pytest>=9.1.1",
+    "wandb>=0.30.0",
+    "weave>=0.53.11",
 ]
 
 [tool.pytest.ini_options]
