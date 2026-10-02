@@ -16,6 +16,7 @@ dependencies = [
 
 [dependency-groups]
 dev = [
+    "duckdb==1.5.6",
     "lightgbm>=4.7.0",
     "openai>=3.23.0",
     "pytest>=9.1.1",
