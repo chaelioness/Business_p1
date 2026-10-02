@@ -229,3 +229,6 @@ cache/
 
 # W&B 로컬 실행 기록
 wandb/
+
+# C 원본 산출물 중 큰 표
+work/c/artifacts/**/*.parquet

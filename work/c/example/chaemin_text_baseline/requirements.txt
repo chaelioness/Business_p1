@@ -1,0 +1,6 @@
+# Already provided by Finance's pyproject.toml:
+pandas>=2.2
+numpy>=1.26
+pyarrow>=16
+# Additional package for fast bounded-memory raw text indexing (no service/API):
+duckdb==1.5.6

@@ -91,23 +91,31 @@ def baseline_path(folds_hash):
     return CACHE / "baselines" / f"{folds_hash}.json"
 
 
-def save_gap_baseline(ds=None, folds=None):
-    """갭 규칙(eda.cv_check_ovn_gap, 전일 종가 기준) 점수를 폴드 해시별로 저장.
-    run_cv 는 이 파일이 있을 때만 같은 run 에 기준선을 붙임.  uv run python -m lab.cv baseline"""
-    from eda.cv_check_ovn_gap import fit_ovn_gap
+def save_baseline(fit=None, key="gap", ds=None, folds=None):
+    """규칙 기준선 점수를 폴드 해시별 파일에 key 로 저장 (같은 파일에 여러 규칙).
+    run_cv 는 이 파일이 있으면 같은 run 에 baseline/<key>/* 와 vs_<key> 를 붙임.
+        uv run python -m lab.cv baseline           # 갭 규칙 (eda.cv_check_ovn_gap)
+    """
+    if fit is None:
+        from eda.cv_check_ovn_gap import fit_ovn_gap as fit
 
     ds = ds or Dataset()
     folds = folds or load_folds(ds)
-    res = run_cv(fit_ovn_gap, ds, folds, track=False)
+    res = run_cv(fit, ds, folds, track=False)
     t = res.table[res.table.group == "all"].set_index("fold").score
-    out = {**{f"gap/{k}": float(v) for k, v in t.items()},
-           "gap/mean": float(t.mean()), "gap/sd": float(t.std())}
+    out = {**{f"{key}/{k}": float(v) for k, v in t.items()},
+           f"{key}/mean": float(t.mean()), f"{key}/sd": float(t.std())}
     for g in ("seen", "unseen"):
-        out[f"gap/mean_{g}"] = float(res.table[res.table.group == g].score.mean())
+        out[f"{key}/mean_{g}"] = float(res.table[res.table.group == g].score.mean())
     path = baseline_path(tracking.folds_info(folds)["folds_hash"])
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(out, indent=2), encoding="utf-8")
+    old = json.loads(path.read_text(encoding="utf-8")) if path.exists() else {}
+    old = {k: v for k, v in old.items() if not k.startswith(f"{key}/")}
+    path.write_text(json.dumps({**old, **out}, indent=2), encoding="utf-8")
     return out
+
+
+save_gap_baseline = save_baseline
 
 
 def run_cv(fit, ds=None, folds=None, use_unseen=True, verbose=True,
@@ -179,4 +187,4 @@ if __name__ == "__main__":
     import sys
 
     if sys.argv[1:] == ["baseline"]:
-        print(save_gap_baseline())
+        print(save_baseline())

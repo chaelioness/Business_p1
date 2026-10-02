@@ -28,6 +28,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
+from src import score
 from src.paths import ROOT
 
 CONFIG = Path(__file__).with_name("wandb.json")
@@ -176,11 +177,23 @@ class Tracker:
             self.run.log({"importance/mean": self.wandb.Table(
                 columns=["feature", "importance"],
                 data=[[str(k), float(v)] for k, v in imp.items()])})
+        months = preds.assign(month=pd.to_datetime(preds.date).dt.strftime("%Y-%m"))
+        mrows = [[m, int(len(g)), float(score(g.label, g.label_pred)["score"])]
+                 for m, g in months.groupby("month")]
+        self.run.log({"monthly": self.wandb.Table(columns=["month", "n", "score"], data=mrows)})
+        for m, n, sc in mrows:
+            self.run.summary[f"month/{m}"] = sc
+        main = table[(table.group == "all")].set_index("fold").score
+        last = main.index[-1]
+        self.run.summary["score_main"] = float(main.iloc[-1])      # 마지막 폴드 = 주 지표 (안 2)
         if baseline:
             for k, v in baseline.items():
                 self.run.summary[f"baseline/{k}"] = v
-            if "gap/mean" in baseline:
-                self.run.summary["vs_gap"] = self.run.summary["score"] - baseline["gap/mean"]
+            for key in {k.split("/")[0] for k in baseline}:
+                if f"{key}/mean" in baseline:
+                    self.run.summary[f"vs_{key}"] = self.run.summary["score"] - baseline[f"{key}/mean"]
+                if f"{key}/{last}" in baseline:
+                    self.run.summary[f"vs_{key}_{last}"] = float(main.iloc[-1]) - baseline[f"{key}/{last}"]
 
     @_safe
     def model(self, models, name, metadata):
