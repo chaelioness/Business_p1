@@ -137,6 +137,27 @@ def fit_rule_add(t, feats):
     return (lambda x: s1(x) + bt * sd * E.zapply(x[f], mf)), (a, b), {"beta": bt, "lam": i1["lam"], "train_score": sc}
 
 
+KAPPAS = [-1.0, -0.75, -0.5, -0.25, 0.0]
+THETAS = [-0.5, -0.25, 0.0, 0.25, 0.5]
+
+
+def fit_rule_gen(t, feats):
+    """s = (gap + κ·mkt_gap + θ·pre_move) / vol20 · exp(−λ·z(ext_range_z)).
+    κ<0 이면 시장 전체 갭을 덜 믿음 (A EDA: 시장 갭은 장중 되돌림), θ 는 장전 움직임 비중. 모두 train."""
+    me = E.zfit(t.ext_range_z)
+    y = t.label.to_numpy(int)
+
+    def sfun(x, k, th, lam):
+        g = x.gap.to_numpy(float) + k * x.mkt_gap.to_numpy(float) + th * np.nan_to_num(x.pre_move.to_numpy(float))
+        return g / x.vol20.to_numpy(float) * np.exp(-lam * E.zapply(x.ext_range_z, me))
+    use_k = KAPPAS if "kappa" in feats else [0.0]
+    use_t = THETAS if "theta" in feats else [0.0]
+    best = max(((*E.fit_cut(sfun(t, k, th, lam), y), k, th, lam)
+                for k in use_k for th in use_t for lam in LAMS), key=lambda r: r[0])
+    sc, a, b, k, th, lam = best
+    return (lambda x: sfun(x, k, th, lam)), (a, b), {"kappa": k, "theta": th, "lam": lam, "train_score": sc}
+
+
 ENS_W = [0.0, 0.25, 0.5, 1.0, 2.0]
 
 
@@ -212,7 +233,26 @@ def make_fit(kind, feats, text=False):
         if kind == "rule_size":
             labels, info = fit_rule_size(t, feats)
             return E.TableModel(labels, info, None, scorer)
-        if kind == "rule_add":
+        if kind == "winvote":                    # 전체·최근 250·최근 120 기준일 규칙의 등급 중간값
+            ud = np.sort(t.date.unique())
+            fits = [fit_rule(t[t.date >= ud[-min(n, len(ud))]], []) for n in (10 ** 6, 250, 120)]
+
+            def vote(x):
+                ls = []
+                for s_, (a_, b_), _ in fits:
+                    v = np.asarray(s_(x), float)
+                    v[np.isnan(x.gap_z.to_numpy(float))] = np.nan
+                    ls.append(E.R.cut(v, a_, b_))
+                return np.median(np.vstack(ls), axis=0).astype(int)
+            return E.TableModel(vote, {"lams": [f[2]["lam"] for f in fits]}, None, scorer)
+        if kind.startswith("recent"):            # 최근 N 기준일만으로 B 규칙
+            n = int(kind[6:])
+            ud = np.sort(t.date.unique())
+            t = t[t.date >= ud[-min(n, len(ud))]]
+            s, (a, b), info = fit_rule(t, [])
+        elif kind == "rule_gen":
+            s, (a, b), info = fit_rule_gen(t, feats)
+        elif kind == "rule_add":
             s, (a, b), info = fit_rule_add(t, feats)
         elif kind == "rule":
             s, (a, b), info = fit_rule(t, feats)

@@ -52,6 +52,16 @@ EXPS = {   # 이름: (kind, feats, text)
     "v2_rsize_atr14": ("rule_size", ["atr14"], False),
     "v2_radd_text_dir": ("rule_add", ["text_dir"], True),
     "v2_radd_lex_posneg": ("rule_add", ["lex_posneg"], False),
+    # v3: 갭 구성 바꾸기, 시장 국면 경계, 최근 기간만
+    "v3_gen_kappa": ("rule_gen", ["kappa"], False),
+    "v3_gen_theta": ("rule_gen", ["theta"], False),
+    "v3_gen_kappa_theta": ("rule_gen", ["kappa", "theta"], False),
+    "v3_rsize_mkt_vol20": ("rule_size", ["mkt_vol20"], False),
+    "v3_rsize_bigfreq60": ("rule_size", ["bigfreq60"], False),
+    "v3_rsize_abs_mkt_gap": ("rule_size", ["abs_mkt_gap"], False),
+    "v3_recent250": ("recent250", [], False),
+    "v3_recent120": ("recent120", [], False),
+    "v3_winvote": ("winvote", [], False),
     # 앙상블: B 규칙 + Huber 선형
     "v2_ens_rule_huber_core": ("ens_huber", CORE, False),
     "v2_ens_rule_huber_text": ("ens_huber", CORE + LEXT + CT, False),
