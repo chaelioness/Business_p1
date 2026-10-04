@@ -1,0 +1,18 @@
+{
+  "earn_rows": 297,
+  "earn_p_big_vs_normal": [
+    0.6397,
+    0.128
+  ],
+  "earn_mean_absret_vs_normal": [
+    4.7253,
+    1.2996
+  ],
+  "earn_share_of_all_big_moves": 0.0741,
+  "earn_spearman_surprise_ret": 0.2355,
+  "earn_spearman_gap_ret": 0.8017,
+  "earn_spearman_surprise_vs_ret_resid_after_gap": 0.0957,
+  "analyst_up_minus_down_intraday_excl_earn": 0.139,
+  "analyst_events_on_earn_days_share": 0.013,
+  "reddit_mentions_total": 7851
+}

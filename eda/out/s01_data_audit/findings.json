@@ -1,0 +1,20 @@
+{
+  "daily_days_per_symbol_min_max": [
+    376,
+    376
+  ],
+  "daily_missing_ret": 0,
+  "daily_ret_mismatch_gt_1bp": 0,
+  "n_abs_ret_gt_12pct": 34,
+  "hourly_vs_daily_close_median_absdiff_bp": 0.0,
+  "hourly_vs_daily_close_share_gt_10bp": 0.0,
+  "ext_session_volume_recorded_share": 0.0001,
+  "news_known_at_minute_values_top": {
+    "30": 607575,
+    "45": 606418,
+    "00": 602633,
+    "15": 593354
+  },
+  "news_share_after_close_or_premarket": 0.579,
+  "news_daily_count_median": 4927.0
+}

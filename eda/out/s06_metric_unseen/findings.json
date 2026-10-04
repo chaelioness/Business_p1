@@ -1,0 +1,29 @@
+{
+  "penalty_share_from_big_rows": 0.737,
+  "best_in_sample_threshold_ab": [
+    0.1,
+    0.6,
+    0.426
+  ],
+  "score_raw_gap_best_vs_z_gap_best": [
+    0.426,
+    0.4274,
+    [
+      0.05,
+      0.4
+    ]
+  ],
+  "score_gap_vs_gap_plus_earn_override": [
+    0.426,
+    0.4259
+  ],
+  "monthly_score_min_max": [
+    0.1891,
+    0.5908
+  ],
+  "corr_monthly_score_vs_pbig": -0.1146,
+  "price_level_range_seen": [
+    18.15,
+    1109.87
+  ]
+}

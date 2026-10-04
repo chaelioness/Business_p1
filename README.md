@@ -2,6 +2,8 @@
 
 Business Analytics Finance Project — 다음 거래일 방향 예측. 과제 설명은 [docs/project_overview.md](docs/project_overview.md),
 교수님 원본 README 는 [docs/course_README.md](docs/course_README.md).
+EDA 결과는 [팀 통합본](docs/worklog/2026-10-02_EDA_팀_통합본.md)과 [재은 EDA](docs/worklog/2026-10-01_EDA_금융데이터_탐색.md), 코드는 [eda/](eda/README.md).
+금융·통계 용어가 낯설면 [docs/glossary.md](docs/glossary.md), 그림으로 보려면 [docs/explainer/](docs/explainer/README.md).
 
 ## 시작
 
@@ -56,6 +58,7 @@ print(res.summary())               # 폴드별 score, all / seen / unseen
 | 전부 보합 | 0.000 | 0.000 | 0.000 | 0.000 | 0.000 |
 | 어제 label 따라가기 | -0.132 | -0.116 | -0.069 | -0.011 | -0.082 |
 | 개장 전 갭 하나로 구간 나누기 | 0.181 | 0.199 | 0.147 | 0.287 | 0.204 |
+| 전일 종가 기준 시간외 갭으로 구간 나누기 (`eda/cv_check_ovn_gap.py`) | 0.423 | 0.404 | 0.391 | 0.511 | **0.433** |
 
 ## 피처 규칙 (AI 에 코드 맡길 때도 이 규칙을 같이 붙여 줄 것)
 
@@ -72,3 +75,41 @@ print(res.summary())               # 폴드별 score, all / seen / unseen
 from lab.leak import check_no_leak
 check_no_leak(build, days)        # cutoff 이후 조회, day.y, Reddit score 쓰면 LeakError
 ```
+
+## 실험 기록 (W&B)
+
+`run_cv` 를 돌리면 팀 W&B 프로젝트 **BI_finance_project / finance-direction** 에 run 이 하나 생김.
+처음 한 번만 각자 `uv sync` 후 `uv run wandb login` (키는 코드·파일·worklog 에 적지 않음).
+키가 없거나 `WANDB_MODE=disabled` 면 기록 없이 예전처럼 돌아감.
+
+```python
+res = run_cv(fit, name="lgb_v1_match",                 # run 이름
+             config={"features": FEATS, "params": PARAMS, "decode": "match_train"},
+             tags=["lgb"], log_model=False)            # True 면 폴드별 모델을 Artifact 로
+```
+
+- 자동으로 붙는 것: 실행자(git user.name), 커밋·미커밋 여부, 폴드 해시·날짜, 검증 방식, fit 이름, unseen 종목
+- 지표: 폴드별·평균·표준편차 score / accuracy / big_recall / big_prec (all·seen·unseen), 예측·정답 등급 분포,
+  폴드별 혼동행렬, 모델에 `feature_importance` 가 있으면 그것, 갭 규칙 기준선(`baseline/gap/*`, `vs_gap`)
+- 기준선은 `uv run python -m lab.cv baseline` 으로 `cache/baselines/` 에 한 번 만들어 두면 이후 run 에 붙음
+- 올리지 않는 것: 원본 데이터, 예측 행 전체, API 키
+- 임시로 다른 프로젝트에 남기려면 `WANDB_PROJECT=scratch` (lab/wandb.json 은 고치지 않음)
+
+## LLM 호출 (Weave)
+
+`lab/llm.py` 의 `complete()` 하나로 부름. W&B Inference(기본 `OpenPipe/Qwen3-14B-Instruct`)를 쓰고
+호출은 **BI_finance_project / finance-llm** 에 Weave 로 남음. 같은 입력은 `cache/llm/` 에서 꺼내 다시 부르지 않음.
+
+```python
+from lab.llm import complete, estimate, usage
+estimate(batch, max_calls=300)                 # 새로 부를 호출 수 확인. 대량이면 팀에 먼저 말하기
+answers = [complete(m, temperature=0, max_calls=300) for m in batch]
+usage()                                        # 이번 실행 / 누적 호출·토큰
+```
+
+원칙 (API 예산 팀당 14만원, 절반만 쓰기)
+- LLM 은 **학습 기간 데이터 분석·라벨링에만** 씀. `src/model.py` 는 LLM 을 부르지 않음
+  (채점 환경에 키·인터넷 보장 없음, 채점 때 학습 안 다시 돌림). LLM 라벨로 학습한 규칙·작은 모델만 제출에 넣음
+- 입력에 정답(`day.y`)이나 cutoff 이후 정보를 넣지 않음. 뉴스는 `day.news(...)` 로 꺼낸 것만
+- 검증·홀드아웃 기간 기사로 프롬프트를 고르지 않음
+- 근거가 있는 쓰임: 논조로 방향 맞히기가 아니라 "실적·가이던스·소송·M&A 같은 큰 사건 기사인가" (크기 신호)

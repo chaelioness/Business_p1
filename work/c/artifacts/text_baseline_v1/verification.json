@@ -1,0 +1,12 @@
+{
+  "full_batch_single_day_parity": 376,
+  "raw_api_count_checks": 183,
+  "feature_rows": 18800,
+  "strict_cutoff_raw_api_checks": 4,
+  "no_labels_or_engagement_in_feature_table": true,
+  "source_gap_rows": 650,
+  "unseen_tag_rows": 1235,
+  "gap_and_insufficient_history_masking": true,
+  "original_files_unchanged": 17,
+  "api_calls": 0
+}

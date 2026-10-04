@@ -12,12 +12,16 @@ dependencies = [
     "pydantic>=2.0",
     "matplotlib>=3.8",
     "ipykernel>=6.29",
-    "lightgbm>=4.7.0",
 ]
 
 [dependency-groups]
 dev = [
+    "duckdb==1.5.6",
+    "lightgbm>=4.7.0",
+    "openai>=3.23.0",
     "pytest>=9.1.1",
+    "wandb>=0.30.0",
+    "weave>=0.53.11",
 ]
 
 [tool.pytest.ini_options]

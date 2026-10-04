@@ -234,3 +234,12 @@ dataset_train/
 # 개인 메모 (팀 저장소에 올리지 않음)
 work/b/새채팅_인수인계.md
 work/b/.Rhistory
+
+# EDA 결과 표는 작아서 공유함 (보고서가 링크함)
+!eda/out/**/*.csv
+
+# W&B 로컬 실행 기록
+wandb/
+
+# C 원본 산출물 중 큰 표
+work/c/artifacts/**/*.parquet

@@ -1,0 +1,113 @@
+{
+  "s01_data_audit": {
+    "daily_days_per_symbol_min_max": [
+      376,
+      376
+    ],
+    "daily_missing_ret": 0,
+    "daily_ret_mismatch_gt_1bp": 0,
+    "n_abs_ret_gt_12pct": 34,
+    "hourly_vs_daily_close_median_absdiff_bp": 0.0,
+    "hourly_vs_daily_close_share_gt_10bp": 0.0,
+    "ext_session_volume_recorded_share": 0.0001,
+    "news_known_at_minute_values_top": {
+      "30": 607575,
+      "45": 606418,
+      "00": 602633,
+      "15": 593354
+    },
+    "news_share_after_close_or_premarket": 0.579,
+    "news_daily_count_median": 4927.0
+  },
+  "s02_target_returns": {
+    "ret_mean_sd_skew_kurt": [
+      0.0991,
+      2.0613,
+      0.705,
+      16.72
+    ],
+    "tail_ratio_|z|>3_vs_normal": 6.76,
+    "big_moves_share_top10_symbols": 0.415,
+    "p_big_min_max_by_symbol": [
+      0.027,
+      0.419
+    ],
+    "corr_symbol_vol_vs_pbig": 0.985,
+    "acf_ret_lag1": -0.0272,
+    "acf_absret_lag1_5_10": [
+      0.119,
+      0.042,
+      0.021
+    ],
+    "p_big_vol20_decile1_vs_10": [
+      0.045,
+      0.311
+    ],
+    "thr_in_sigma_median": 1.59,
+    "auc_big_atr14": 0.713,
+    "r2_on_market_median": 0.274,
+    "market_var_share_pooled": 0.227,
+    "share_big_moves_on_|mkt|>1.5_days": 0.225,
+    "share_days_|mkt|>1.5": 0.074,
+    "share_big_in_top5pct_days": 0.179,
+    "avg_pairwise_corr": 0.23
+  },
+  "s03_overnight_gap": {
+    "var_share_open_gap": 0.3895,
+    "var_share_intraday": 0.6553,
+    "corr_open_gap_intraday": -0.04,
+    "r2_ovn_gap_to_open_gap": 0.7601,
+    "r2_ovn_gap_to_ret": 0.251,
+    "big_days_share_where_|open_gap|>1.5": 0.3805,
+    "naive_ovn_gap_score": 0.3339,
+    "naive_pre_move_score": 0.1321
+  },
+  "s04_technical": {},
+  "s05_events_text": {
+    "earn_rows": 297,
+    "earn_p_big_vs_normal": [
+      0.6397,
+      0.128
+    ],
+    "earn_mean_absret_vs_normal": [
+      4.7253,
+      1.2996
+    ],
+    "earn_share_of_all_big_moves": 0.0741,
+    "earn_spearman_surprise_ret": 0.2355,
+    "earn_spearman_gap_ret": 0.8017,
+    "earn_spearman_surprise_vs_ret_resid_after_gap": 0.0957,
+    "analyst_up_minus_down_intraday_excl_earn": 0.139,
+    "analyst_events_on_earn_days_share": 0.013,
+    "reddit_mentions_total": 7851
+  },
+  "s06_metric_unseen": {
+    "penalty_share_from_big_rows": 0.737,
+    "best_in_sample_threshold_ab": [
+      0.1,
+      0.6,
+      0.426
+    ],
+    "score_raw_gap_best_vs_z_gap_best": [
+      0.426,
+      0.4274,
+      [
+        0.05,
+        0.4
+      ]
+    ],
+    "score_gap_vs_gap_plus_earn_override": [
+      0.426,
+      0.4259
+    ],
+    "monthly_score_min_max": [
+      0.1891,
+      0.5908
+    ],
+    "corr_monthly_score_vs_pbig": -0.1146,
+    "price_level_range_seen": [
+      18.15,
+      1109.87
+    ]
+  }
+}
