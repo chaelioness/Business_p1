@@ -1,0 +1,46 @@
+{
+  "version": "chaemin-text-v1.0",
+  "scope": "TRAIN only; candidate feature baseline, not validated final model",
+  "data": "/Users/coals/Documents/BA_pj1/dataset_train",
+  "target_start": "2024-08-14",
+  "target_end": "2026-02-12",
+  "reference_start": "2024-08-13",
+  "reference_end": "2026-02-11",
+  "n_rows": 18800,
+  "n_symbols": 50,
+  "n_days": 376,
+  "baseline_features": [
+    "news_log_count_overnight",
+    "news_spike20",
+    "reddit_log_count_overnight",
+    "reddit_spike20",
+    "reddit_persistence3",
+    "text_both_spike",
+    "text_overnight_hours"
+  ],
+  "optional_features": [
+    "news_z20",
+    "reddit_z20",
+    "news_tone_mean_overnight",
+    "news_tone_negative_ratio_overnight",
+    "text_spike_product"
+  ],
+  "quality_columns_not_model_input": [
+    "qc_news_gap_24h",
+    "qc_news_gap_overnight",
+    "qc_news_symbol_unseen",
+    "qc_news_history_fraction20",
+    "qc_reddit_gap_24h",
+    "qc_reddit_gap_overnight",
+    "qc_reddit_history_fraction20"
+  ],
+  "label_file": "train_labels.parquet",
+  "feature_file": "train_text_features.parquet",
+  "join_keys": [
+    "symbol",
+    "target"
+  ],
+  "api_calls": 0,
+  "seconds": 10.19,
+  "dependency_note": "duckdb for raw indexing; numpy/pandas/pyarrow for cached feature generation"
+}

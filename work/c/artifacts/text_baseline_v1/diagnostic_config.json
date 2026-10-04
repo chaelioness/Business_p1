@@ -1,0 +1,37 @@
+{
+  "scope": "TRAIN-only diagnostic holdout; the period has already been seen in EDA, NOT independent validation",
+  "train_start": "2024-08-14",
+  "train_end": "2025-10-23",
+  "holdout_start": "2025-10-24",
+  "holdout_end": "2026-02-12",
+  "train_rows": 15000,
+  "holdout_rows": 3800,
+  "groups": {
+    "news": [
+      "news_log_count_overnight",
+      "news_spike20",
+      "text_overnight_hours"
+    ],
+    "reddit": [
+      "reddit_log_count_overnight",
+      "reddit_spike20",
+      "reddit_persistence3",
+      "text_overnight_hours"
+    ],
+    "combined": [
+      "news_log_count_overnight",
+      "news_spike20",
+      "reddit_log_count_overnight",
+      "reddit_spike20",
+      "reddit_persistence3",
+      "text_both_spike",
+      "text_overnight_hours"
+    ]
+  },
+  "score": "src.data.score",
+  "decoding": "argmax only",
+  "tuning": false,
+  "structured_features_used": false,
+  "no_model_artifact_saved": true,
+  "selection_note": "Default feature list fixed BEFORE this diagnostic; do not choose best model from this table"
+}
