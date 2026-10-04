@@ -78,6 +78,7 @@ def master(days):
             if k != "lex_tone":
                 t[k] = t[k].fillna(0.0)
         t["lex_posneg"] = t.lex_ev_pos - t.lex_ev_neg
+        t["abs_mkt_gap"] = t.mkt_gap.abs()
         t["label"] = t.label.astype(int)
         t["yz"] = t.ret_pct / 100 / t.vol20          # 자기 변동성 단위 수익률 (회귀 목표)
         _master = t
