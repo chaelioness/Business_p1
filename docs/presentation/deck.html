@@ -1,0 +1,615 @@
+<title>A 파트 결과 해석</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;700&family=IBM+Plex+Mono:wght@400;600&display=swap">
+<style>
+/* 레이아웃: 16:9 슬라이드를 세로로 쌓고, 각 장 아래에 발표 노트. 글자 크기는 슬라이드 폭(cqw)에 비례 */
+:root {
+  --bg: #eef1ef;          /* 슬라이드 바깥 */
+  --paper: #ffffff;       /* 슬라이드 */
+  --ink: #111614;
+  --muted: #59625d;
+  --green: #1f6b4f;       /* 제목 밑줄, 표 머리, 소제목 막대 */
+  --green-soft: #e8f3ed;  /* 결론 상자 */
+  --amber: #b45309;
+  --amber-soft: #fdf6e7;
+  --red: #b42318;
+  --line: #d9dfdb;
+  --row: #f5f7f6;
+  --sans: "IBM Plex Sans KR", "Malgun Gothic", "Apple SD Gothic Neo", sans-serif;
+  --mono: "IBM Plex Mono", Consolas, monospace;
+  color-scheme: light;
+}
+body { background: var(--bg); color: var(--ink); font-family: var(--sans); word-break: keep-all; }
+.wrap { max-width: 1240px; margin: 0 auto; padding-inline: 16px; padding-block: 24px 64px; display: flex; flex-direction: column; gap: 28px; }
+.toolbar { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; justify-content: space-between; font-size: 14px; color: var(--muted); }
+.toolbar button { font: inherit; padding: 6px 12px; border: 1px solid var(--line); background: var(--paper); color: var(--ink); border-radius: 4px; cursor: pointer; }
+.toolbar button:focus-visible, summary:focus-visible { outline: 2px solid var(--green); outline-offset: 2px; }
+.toc { display: flex; flex-wrap: wrap; gap: 6px; }
+.toc a { color: var(--green); text-decoration: none; font-size: 13px; padding: 2px 6px; border: 1px solid var(--line); border-radius: 3px; background: var(--paper); }
+
+.unit { display: flex; flex-direction: column; gap: 8px; }
+.slide { position: relative; width: 100%; aspect-ratio: 16 / 9; background: var(--paper); container-type: inline-size; overflow: hidden; box-shadow: 0 1px 3px rgba(17, 22, 20, .12); }
+.s { position: absolute; inset: 0; display: flex; flex-direction: column; font-size: 1.35cqw; line-height: 1.5; }
+.s h2 { margin: 0; padding: 2.4cqw 4cqw 1.1cqw; font-size: 2.85cqw; font-weight: 700; letter-spacing: -.02em; text-wrap: balance; border-bottom: .55cqw solid var(--green); }
+.s .body { flex: 1; min-height: 0; padding: 1.6cqw 4cqw 3.3cqw; display: flex; flex-direction: column; gap: 1.2cqw; }
+.s .sub { display: flex; align-items: center; gap: 1.1cqw; font-weight: 700; font-size: 1.75cqw; color: var(--green); }
+.s .sub::before { content: ""; width: .55cqw; height: 2.4cqw; background: var(--green); flex: none; }
+.s .foot { position: absolute; left: 0; right: 0; bottom: 0; height: 2.4cqw; border-top: .25cqw solid var(--line); display: flex; justify-content: space-between; align-items: center; padding: 0 2cqw; font-size: 1cqw; color: var(--muted); }
+.s .tag { display: inline-block; font-size: 1cqw; padding: .1cqw .7cqw; border: .1cqw solid var(--green); color: var(--green); border-radius: .3cqw; margin-left: .6cqw; vertical-align: middle; font-weight: 500; }
+.s ul { margin: 0; padding-left: 1.6cqw; display: flex; flex-direction: column; gap: .5cqw; }
+.s li::marker { color: var(--green); }
+.s b, .s strong { font-weight: 700; }
+.s code { font-family: var(--mono); font-size: .92em; background: var(--row); padding: 0 .3cqw; }
+.s .num { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+.s .red { color: var(--red); font-weight: 700; }
+.s .grn { color: var(--green); font-weight: 700; }
+.s .mut { color: var(--muted); }
+.s .small { font-size: 1.15cqw; }
+
+.cols { display: grid; gap: 2cqw; flex: 1; min-height: 0; }
+.c2 { grid-template-columns: 1fr 1fr; }
+.c32 { grid-template-columns: 3fr 2fr; }
+.c23 { grid-template-columns: 2fr 3fr; }
+.c73 { grid-template-columns: 13fr 7fr; }
+.side { font-size: 1.15cqw; }
+.cols > * { min-width: 0; min-height: 0; display: flex; flex-direction: column; gap: 1cqw; }
+.fig { flex: 1; min-height: 0; display: flex; align-items: center; justify-content: center; }
+.fig img { max-width: 100%; max-height: 100%; object-fit: contain; }
+
+.box { border: .15cqw solid var(--green); border-left-width: .8cqw; background: var(--green-soft); padding: .9cqw 1.4cqw; }
+.box.warn { border-color: var(--amber); background: var(--amber-soft); }
+.box.plain { border-color: var(--line); background: var(--row); }
+.box h4 { margin: 0 0 .3cqw; font-size: 1.4cqw; color: var(--green); }
+.box.warn h4 { color: var(--amber); }
+.box.plain h4 { color: var(--ink); }
+.box p { margin: 0; }
+
+table.t { border-collapse: collapse; width: 100%; font-size: 1.15cqw; }
+table.t th { background: var(--green); color: #fff; font-weight: 700; padding: .5cqw .8cqw; text-align: left; }
+table.t td { padding: .4cqw .8cqw; border-bottom: .1cqw solid var(--line); vertical-align: top; }
+table.t tr:nth-child(even) td { background: var(--row); }
+table.t td.n, table.t th.n { text-align: right; font-family: var(--mono); font-variant-numeric: tabular-nums; white-space: nowrap; }
+table.t tr.hi td { background: var(--green-soft); font-weight: 700; }
+table.t.dense { font-size: 1.02cqw; }
+table.t.dense td, table.t.dense th { padding: .28cqw .55cqw; }
+
+.stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.4cqw; }
+.stat { border-top: .5cqw solid var(--green); background: var(--row); padding: .9cqw 1.3cqw; }
+.stat .v { font-family: var(--mono); font-size: 3.2cqw; font-weight: 600; line-height: 1.1; }
+.stat .k { font-size: 1.1cqw; color: var(--muted); }
+
+.cover { justify-content: center; align-items: center; text-align: center; }
+.cover .rule { position: absolute; left: 0; right: 0; height: .7cqw; background: var(--green); }
+.cover h1 { margin: 0; font-size: 4.4cqw; font-weight: 700; letter-spacing: -.03em; }
+.cover .st { font-size: 2.1cqw; color: var(--green); font-weight: 700; margin-top: 1.4cqw; }
+.cover .who { font-size: 1.5cqw; margin-top: 5cqw; }
+.divider { background: var(--green); color: #fff; justify-content: center; padding-left: 6cqw; }
+.divider h1 { margin: 0; font-size: 4cqw; font-weight: 700; }
+.divider p { margin: 1cqw 0 0; font-size: 1.6cqw; opacity: .85; max-width: 80cqw; }
+
+details.notes { background: var(--paper); border: 1px solid var(--line); border-radius: 4px; font-size: 15px; line-height: 1.7; }
+details.notes summary { cursor: pointer; padding: 8px 14px; color: var(--muted); font-size: 13px; }
+details.notes div { padding: 0 18px 14px; max-width: 78ch; }
+details.notes p { margin: .55em 0; }
+@media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; } }
+</style>
+
+<div class="wrap">
+<div class="toolbar">
+  <span>A 파트 (남재은) · 팀 공유용 초안 · 2026-10-06 · 본편 1–12, 부록 A1–A11</span>
+  <button id="toggle-notes" type="button">발표 노트 모두 펼치기</button>
+</div>
+<nav class="toc" aria-label="슬라이드 목록"><a href="#s1">1 표지</a><a href="#s2">2 요약</a><a href="#s3">3 용어</a><a href="#s4">4 점수식</a><a href="#s5">5 검증 설계</a><a href="#s6">6 갭과 등급</a><a href="#s7">7 실험 여정</a><a href="#s8">8 벌점 출처</a><a href="#s9">9 크게 찍기</a><a href="#s10">10 모델 해석</a><a href="#s11">11 노이즈</a><a href="#s12">12 결론</a><a href="#a0">부록</a><a href="#a1-1">A1-1</a><a href="#a1-2">A1-2</a><a href="#a1-3">A1-3</a><a href="#a1-4">A1-4</a><a href="#a1-5">A1-5</a><a href="#a2-1">A2-1</a><a href="#a2-2">A2-2</a><a href="#a3">A3</a><a href="#a4">A4</a><a href="#a5">A5</a><a href="#a6">A6</a><a href="#a7">A7</a><a href="#a8">A8</a><a href="#a9">A9</a><a href="#a10">A10</a><a href="#a11-1">A11-1</a><a href="#a11-2">A11-2</a></nav>
+
+<!-- ============================================================ 1 -->
+<section class="unit" id="s1" data-t="표지">
+<div class="slide"><div class="s cover">
+  <div class="rule" style="top:13%"></div>
+  <h1>갭 규칙은 왜 아직 1등인가</h1>
+  <div class="st">A 파트 결과 해석 — 실험 53개, 점수식, 다음 단계</div>
+  <div class="rule" style="top:56%"></div>
+  <div class="who">남재은 (A · 모델·통합) &nbsp;·&nbsp; 팀 내부 공유 &nbsp;·&nbsp; 2026-10-06</div>
+  <div class="who mut small" style="margin-top:1cqw">B 규칙(gap_z · ext_range_z) = 김민영 · 텍스트 피처 7개 = 안채민</div>
+</div></div>
+<details class="notes"><summary>발표 노트</summary><div>
+<p>오늘은 제가 10/2 회의 이후에 돌린 실험들을 정리해서 공유합니다. 시간이 10분이라 본편은 핵심만 보고, 자세한 표와 숫자는 뒤 부록에 다 넣어 뒀습니다.</p>
+<p>결론부터 말하면, 민영이 만든 갭 규칙을 아직 아무것도 못 넘었습니다. 오늘은 "왜 못 넘었는지"를 숫자로 확인한 과정을 설명하려고 합니다.</p>
+<p>숫자는 전부 W&amp;B 에 남은 기록을 제가 다시 돌려서 같은 값이 나오는지 맞춰 본 것입니다. 그리고 홀드아웃 기간(6월 이후)은 아무도 안 봤습니다.</p>
+</div></details>
+</section>
+
+<!-- ============================================================ 2 -->
+<section class="unit" id="s2" data-t="요약">
+<div class="slide"><div class="s">
+  <h2>한 장 요약: 53개를 시험했고, B 규칙을 확실히 넘은 건 없다</h2>
+  <div class="body">
+    <div class="stats">
+      <div class="stat"><div class="v">53</div><div class="k">점수를 낸 실험 수 (W&amp;B run)</div></div>
+      <div class="stat"><div class="v">0.515</div><div class="k">B 규칙의 fold4 점수 = 지금 제출본</div></div>
+      <div class="stat"><div class="v">0</div><div class="k">미리 정한 채택 기준을 통과한 실험</div></div>
+      <div class="stat"><div class="v">45/45</div><div class="k">다시 돌렸을 때 기록과 같은 점수</div></div>
+    </div>
+    <div class="sub">확인한 것</div>
+    <ul>
+      <li><b>여러 방법을 붙여 봤지만 거의 안 올랐음.</b> LightGBM, 선형 모델, 손실 함수 6종, 텍스트(C 피처, 단어 목록, TF-IDF)를 붙였을 때 fold4 에서 규칙보다 가장 많이 오른 게 <b>+0.007</b>.</li>
+      <li><b>그 +0.007 도 운으로 나올 수 있는 크기.</b> 가장 높은 <span class="num">v3_winvote 0.522</span>를 검증 날짜를 무작위로 다시 뽑아 채점해 보면(bootstrap), 차이가 0 이하로 나오는 경우도 들어 있음.</li>
+      <li><b>안 오르는 이유는 점수식에 있음.</b> 규칙이 잃는 점수의 절반(51%)이 전체 행의 <b>3%</b>, 즉 "크게 오른 날을 크게 떨어진다고 찍은" 96행에서 나옴. 다른 정보를 더해도 이 부분은 줄지 않았음.</li>
+    </ul>
+    <div class="box"><h4>오늘 같이 정할 것</h4><p>① 최근 기간만으로 학습하는 방식(recent250 / winvote)을 후보로 둘지 &nbsp; ② 처음 보는 종목 점수(0.418)가 낮은 문제 &nbsp; ③ LLM 으로 기사 내용을 분류하는 실험을 소량 해 볼지</p></div>
+  </div>
+  <div class="foot"><span>A 파트 결과 해석</span><span>2</span></div>
+</div></div>
+<details class="notes"><summary>발표 노트</summary><div>
+<p>위의 숫자 네 개만 기억하시면 됩니다. 실험 53개를 했고, 기준 점수는 0.515이고, 기준을 통과한 건 0개이고, 기록은 45개를 다시 돌려서 전부 같은 값이 나왔습니다.</p>
+<p>가장 높게 나온 건 winvote 0.522인데, 0.007 차이는 뒤에서 보여드리겠지만 우연으로도 충분히 나오는 크기입니다.</p>
+<p>그리고 왜 안 오르는지는 한 문장으로 정리됩니다. 규칙이 잃는 점수의 절반이 3% 행, 그러니까 방향을 정반대로 찍은 날에서 나옵니다. 변동성이나 뉴스 양 같은 정보는 "얼마나 크게 움직이나"는 알려 주지만 "어느 쪽으로"는 안 알려 줘서, 이 부분을 못 줄입니다.</p>
+<p>마지막 상자 세 개는 오늘 같이 정했으면 하는 것들입니다. 마지막 장에서 다시 보겠습니다.</p>
+</div></details>
+</section>
+
+<!-- ============================================================ 3 -->
+<section class="unit" id="s3" data-t="용어">
+<div class="slide"><div class="s">
+  <h2>이 발표에서 쓰는 말</h2>
+  <div class="body"><div class="cols c2">
+    <div>
+      <table class="t">
+        <tr><th style="width:26%">말</th><th>뜻</th></tr>
+        <tr><td><b>갭 (gap)</b></td><td>전날 종가 대비, 오늘 아침 개장 전 마지막 시간외 거래 가격이 몇 % 움직였나. 예: 전날 100달러, 아침 8시 102달러 → 갭 +2%</td></tr>
+        <tr><td><b>vol20</b></td><td>그 종목의 최근 20거래일 하루 수익률 표준편차. "이 종목은 평소 하루에 이 정도 움직인다"</td></tr>
+        <tr><td><b>gap_z</b></td><td>갭 ÷ vol20. 평소 움직임에 비해 이번 갭이 얼마나 큰지. 변동성 큰 종목의 2% 와 작은 종목의 2% 를 같은 눈금으로 비교하려고 나눔</td></tr>
+        <tr><td><b>ext_range_z</b></td><td>시간외 거래 동안의 최고가−최저가 폭 ÷ vol20. 밤사이 가격이 많이 출렁였는지</td></tr>
+        <tr><td><b>B 규칙</b></td><td>민영이 만든 규칙. gap_z 를 출렁임만큼 조금 깎은 점수 s 를 경계 a, b 로 잘라 5등급을 찍음. 학습하는 숫자가 5개뿐</td></tr>
+        <tr><td><b>디코딩</b></td><td>모델이 낸 확률이나 점수를 실제로 찍을 등급(0~4)으로 바꾸는 방법</td></tr>
+      </table>
+    </div>
+    <div>
+      <table class="t">
+        <tr><th style="width:26%">말</th><th>뜻</th></tr>
+        <tr><td><b>train / val</b></td><td>train 은 학습에 쓰는 기간, val 은 학습 때 안 보여 주고 채점만 하는 기간</td></tr>
+        <tr><td><b>fold4</b></td><td>val 이 2026-03-04 ~ 05-28 인 마지막 검증 구간. 우리가 주 지표로 보는 점수</td></tr>
+        <tr><td><b>embargo</b></td><td>train 과 val 사이에 일부러 비워 둔 12거래일. 실제 평가에서도 데이터 끝과 평가 시작 사이가 비어 있어서 똑같이 맞춤</td></tr>
+        <tr><td><b>처음 보는 종목</b></td><td>학습에서 일부러 뺀 10종목. 평가에 새 종목이 나오니 그 상황을 흉내 냄 (unseen)</td></tr>
+        <tr><td><b>bootstrap</b></td><td>검증 60일을 무작위로 다시 뽑아(같은 날 중복 허용) 1,000번 채점. 점수가 날짜 운에 따라 얼마나 흔들리는지 봄</td></tr>
+        <tr><td><b>λ, δ, γ, β, w</b></td><td>규칙에 정보를 더할 때 "얼마나 반영할지"를 정하는 숫자. 여러 후보 중 train 점수가 가장 좋은 걸 고름. 0 이 골라지면 그 정보를 안 쓴다는 뜻</td></tr>
+      </table>
+    </div>
+  </div></div>
+  <div class="foot"><span>정의는 docs/glossary.md · work/a/gapz_rule.py 와 같음</span><span>3</span></div>
+</div></div>
+<details class="notes"><summary>발표 노트</summary><div>
+<p>본론 들어가기 전에 자주 나오는 말만 정리합니다. 이미 아시는 건 넘어가셔도 됩니다.</p>
+<p>제일 중요한 건 갭과 gap_z 입니다. 갭은 전날 종가에서 오늘 아침 개장 전 가격까지 얼마나 움직였냐는 거고, 이걸 그 종목이 평소 움직이는 크기로 나눈 게 gap_z 입니다. 테슬라가 2% 오른 것과 코카콜라가 2% 오른 건 의미가 다르니까 나눠서 비교하는 겁니다.</p>
+<p>오른쪽 마지막 줄의 그리스 문자들은 뒤에서 계속 나옵니다. 어떤 정보를 규칙에 더할 때 "얼마나 세게 반영할지"를 정하는 숫자인데, 우리가 정하지 않고 학습 데이터에서 점수가 제일 좋은 값을 고르게 했습니다. 0 이 골라졌다는 건 학습 데이터가 "그 정보는 안 쓰는 게 낫다"고 답했다는 뜻입니다.</p>
+</div></details>
+</section>
+
+<!-- ============================================================ 4 -->
+<section class="unit" id="s4" data-t="점수식">
+<div class="slide"><div class="s">
+  <h2>점수식은 크게 움직인 날 방향을 반대로 찍는 걸 가장 크게 벌준다 <span class="tag">비대칭 loss</span><span class="tag">class imbalance</span></h2>
+  <div class="body"><div class="cols c23">
+    <div><div class="fig"><img src="figs/00_weight.png" alt="벌점 가중치 행렬"></div></div>
+    <div>
+      <div class="sub">표 읽는 법 (행 = 실제 결과, 열 = 우리가 찍은 것)</div>
+      <ul>
+        <li>실제로 <b>보합</b>이었던 날(가운데 줄)은 전부 0. 뭘 찍어도 벌점이 없음.</li>
+        <li>실제로 <b>급하락</b>했는데 급상승으로 찍으면 <span class="red">64</span>, 상승으로 찍으면 <span class="red">36</span>. 크게 움직인 날을 반대로 찍는 게 가장 비쌈.</li>
+        <li>바로 옆 칸 실수(상승이었는데 급상승으로 찍음 등)는 1~4 로 작음.</li>
+      </ul>
+      <div class="sub">점수 = 1 − 실제 벌점 ÷ 무작위 기대 벌점</div>
+      <ul>
+        <li>무작위 기대 벌점: "우리가 찍은 등급 비율은 그대로 두고, 어느 날 무엇을 찍을지만 무작위로 섞었을 때" 나오는 벌점. 그래서 찍는 비율을 바꾸면 분모도 같이 바뀜.</li>
+        <li>0점 = 무작위와 같음, 1점 = 전부 맞힘. 무작위보다 나쁘면 음수도 나옴.</li>
+        <li>fold4 B 규칙: 실제 <span class="num">9,389</span> ÷ 무작위 <span class="num">19,376</span> = 0.485 → 점수 <b class="num">0.515</b></li>
+      </ul>
+      <div class="box"><p>결국 점수는 <b>크게 움직인 날(fold4 val 의 19.5%)에 방향을 맞혔느냐</b>로 거의 정해짐.</p></div>
+    </div>
+  </div></div>
+  <div class="foot"><span>문제와 점수식 · 교수님 src.data.score 그대로 사용</span><span>4</span></div>
+</div></div>
+<details class="notes"><summary>발표 노트</summary><div>
+<p>다들 한 번 보신 표지만 오늘 이야기의 바탕이라 다시 봅니다. 세로가 실제 결과, 가로가 우리가 찍은 등급입니다. 대각선에서 멀어질수록, 그리고 실제 결과가 극단일수록 벌점이 제곱으로 커집니다.</p>
+<p>가운데 줄이 전부 0인 게 중요합니다. 실제로 보합이었던 날은 우리가 뭘 찍든 상관이 없습니다. 반대로 맨 위 줄과 맨 아래 줄, 그러니까 크게 움직인 날은 반대로 찍으면 36이나 64가 붙습니다.</p>
+<p>점수는 우리 벌점을 "무작위로 찍었다면 받았을 벌점"으로 나눠서 1에서 뺍니다. 여기서 헷갈리기 쉬운 점은, 이 무작위 벌점이 우리가 찍은 비율로 계산된다는 겁니다. 급등락을 많이 찍으면 분모도 커지기 때문에, "많이 찍으면 무조건 손해"도 아니고 "적게 찍으면 안전"도 아닙니다.</p>
+<p>fold4 규칙 숫자를 직접 넣어 보면 9,389 나누기 19,376 이 0.485 이고, 1에서 빼면 0.515 입니다.</p>
+</div></details>
+</section>
+
+<!-- ============================================================ 5 -->
+<section class="unit" id="s5" data-t="검증 설계">
+<div class="slide"><div class="s">
+  <h2>검증은 시간 순서대로 자른 폴드 4개, 주 지표는 fold4 <span class="tag">시계열 교차검증</span><span class="tag">누수 방지</span></h2>
+  <div class="body">
+    <table class="t">
+      <tr><th>폴드</th><th>train (기준일)</th><th class="n">train 일수</th><th>비워 둔 12거래일 (embargo)</th><th>val (기준일, 60거래일)</th><th>용도</th></tr>
+      <tr><td>fold1</td><td class="n">2024-08-13 ~ 2025-05-27</td><td class="n">197</td><td class="n">2025-05-28 ~ 06-12</td><td class="n">2025-06-13 ~ 09-09</td><td>참고</td></tr>
+      <tr><td>fold2</td><td class="n">2024-08-13 ~ 2025-08-21</td><td class="n">257</td><td class="n">2025-08-22 ~ 09-09</td><td class="n">2025-09-10 ~ 12-03</td><td>참고</td></tr>
+      <tr><td>fold3</td><td class="n">2024-08-13 ~ 2025-11-14</td><td class="n">317</td><td class="n">2025-11-17 ~ 12-03</td><td class="n">2025-12-04 ~ 2026-03-03</td><td>참고</td></tr>
+      <tr class="hi"><td>fold4</td><td class="n">2024-08-13 ~ 2026-02-12</td><td class="n">377</td><td class="n">2026-02-13 ~ 03-03</td><td class="n">2026-03-04 ~ 05-28</td><td>주 지표</td></tr>
+    </table>
+    <div class="cols c2" style="flex:none">
+      <ul>
+        <li><b>무작위로 섞지 않고 시간 순서로 자름.</b> 섞으면 "내일 데이터로 오늘을 학습"하게 되어 점수가 실제보다 좋게 나옴.</li>
+        <li><b>embargo 12거래일</b>: 실제 데이터 끝(9/14)과 평가 시작(10/1) 사이가 12거래일이라 같은 간격을 둠.</li>
+        <li><b>처음 보는 종목 10개</b>는 학습에서 빼고 따로 채점: BA BKNG CVS GLW NFLX PFE QCOM RTX TMO WELL.</li>
+        <li>val 예측은 전부 <code>guard(day)</code> 를 거침. 대상일 09:30 이후 정보를 읽으려 하면 점수 대신 오류가 남.</li>
+      </ul>
+      <ul>
+        <li><b>fold4 만 주 지표인 이유</b>: 세 사람 EDA 가 대상일 ~2026-02-13 까지 데이터를 보고 피처를 골랐음. fold1~3 의 val 은 그 기간 안이라, 이미 본 데이터로 채점하는 셈이고 점수가 부풀었을 수 있음.</li>
+        <li><b>채택 기준</b> (실험 전에 정함): fold4 점수가 떨어지지 않고 + 4폴드 중 3폴드 이상 오르고 + 4폴드 평균이 0.005 이상 오를 것.</li>
+        <li>홀드아웃(대상일 2026-06-01 이후)은 아직 아무도 안 봄.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="foot"><span>lab/folds.json · lab/leak.py · 10/2 회의 결정(안 2)</span><span>5</span></div>
+</div></div>
+<details class="notes"><summary>발표 노트</summary><div>
+<p>10/2 회의에서 정한 검증 방식 그대로입니다. 시간 순서대로 4번 잘라서, 앞부분으로 학습하고 뒤 60일로 채점합니다. 학습 기간은 폴드가 갈수록 늘어납니다.</p>
+<p>학습 끝과 채점 시작 사이 12거래일을 비우는 이유는 실제 상황 때문입니다. 우리가 받은 데이터는 9월 14일에 끝나고 평가는 10월 1일부터라, 그 사이가 12거래일입니다. 똑같이 비워 둬야 실제와 비슷한 점수가 나옵니다.</p>
+<p>fold4 만 보는 이유는, 우리가 EDA 를 2월 중순까지 데이터로 했기 때문입니다. fold1~3 은 EDA 하면서 이미 들여다본 기간이라 점수가 실제보다 좋게 나올 수 있어서 참고로만 씁니다.</p>
+<p>채택 기준은 민영이 제안한 것과 같고, 실험 돌리기 전에 정했습니다. 결과를 보고 기준을 바꾸지 않으려고 미리 정했고, 이 기준을 통과한 건 하나도 없습니다.</p>
+</div></details>
+</section>
+
+<!-- ============================================================ 6 -->
+<section class="unit" id="s6" data-t="갭과 등급">
+<div class="slide"><div class="s">
+  <h2>방향은 시간외 갭이 정하고, 규칙은 그걸 다섯 칸으로 자른다</h2>
+  <div class="body">
+    <div class="sub">fold4 train 15,040행을 규칙 점수 s 순서로 줄 세워 12묶음(묶음마다 같은 행 수)으로 나눴을 때, 각 묶음의 실제 등급 비율</div>
+    <div class="cols c73"><div><div class="fig"><img src="figs/02_gapz_bins.png" alt="규칙 점수 구간별 실제 등급 비율"></div></div><div class="side">
+      <div class="box"><h4>그림 읽는 법</h4><p>막대 하나가 한 묶음. 왼쪽일수록 아침에 크게 떨어져 있던 종목, 오른쪽일수록 크게 올라 있던 종목. 왼쪽 끝은 빨강(하락)이 많고 오른쪽 끝은 초록(상승)이 많음 = 갭 방향이 그날 방향을 상당히 맞힘.</p></div>
+      <div class="box"><h4>규칙 (B, 제출 v1)</h4><p>s = gap_z × exp(−λ × 밤사이 출렁임). 출렁임이 크면 갭을 조금 덜 믿음. fold4 에서 train 이 고른 값 <span class="num">λ 0.2, a 0.061, b 0.256</span>. |s| 가 a 보다 작으면 보합, a~b 면 상승·하락, b 이상이면 급등락 (점선 4개).</p></div>
+      <div class="box warn"><h4>눈여겨볼 점</h4><p>train 에서 실제 급등락은 13.6% 인데 규칙은 <b>행의 40%</b>를 급등락으로 찍고 보합은 20% 만 찍음. 그런데 맨 오른쪽 묶음도 실제 급상승은 28% 뿐. 방향은 대체로 맞지만 크기는 자주 틀림.</p></div>
+    </div></div>
+  </div>
+  <div class="foot"><span>EDA 출발점: 방향 = 갭 (일별 IC 0.30, A·B 동일) · 그림: scripts/analysis_figs.py</span><span>6</span></div>
+</div></div>
+<details class="notes"><summary>발표 노트</summary><div>
+<p>EDA 에서 세 사람이 공통으로 얻은 결론이 "방향은 갭"이었습니다. 이 그림은 그걸 규칙 점수 기준으로 다시 그린 겁니다.</p>
+<p>읽는 법을 먼저 말씀드리면, 학습 기간 1만 5천 행을 규칙 점수 순서로 세워서 같은 개수씩 12묶음으로 나눴습니다. 왼쪽 끝 묶음은 아침에 가장 크게 떨어져 있던 종목들이고, 오른쪽 끝은 가장 크게 올라 있던 종목들입니다. 막대 안의 색은 그 종목들이 실제로 그날 어떻게 끝났는지입니다.</p>
+<p>왼쪽은 빨강이 많고 오른쪽은 초록이 많습니다. 갭이 방향을 꽤 잘 알려 준다는 뜻입니다.</p>
+<p>점선 네 개가 학습 데이터가 고른 경계입니다. 의외였던 건 규칙이 급등락을 실제보다 세 배 가까이 많이 찍는다는 점입니다. 앞 장에서 말한 분모 효과 때문에 학습 데이터에서는 이게 점수가 제일 좋게 나옵니다.</p>
+<p>그런데 오른쪽 끝 묶음도 실제 급상승은 28% 뿐입니다. 방향은 대체로 맞지만 "얼마나 크게"는 자주 틀린다는 것, 이게 뒤 이야기의 출발점입니다.</p>
+</div></details>
+</section>
+
+<!-- ============================================================ 7 -->
+<section class="unit" id="s7" data-t="실험 여정">
+<div class="slide"><div class="s">
+  <h2>7개 묶음, 53개 실험: 전부 B 규칙 근처에서 멈췄다</h2>
+  <div class="body"><div class="cols c73" style="grid-template-columns:6fr 4fr">
+    <div><div class="fig"><img src="figs/03_journey.png" alt="묶음별 fold4 점수"></div></div>
+    <div>
+      <p class="small mut" style="margin:0">점 하나 = 실험 하나. 초록 점선 = B 규칙(0.515). 회색 띠 = 무작위로 찍어도 나오는 범위.</p>
+      <table class="t dense">
+        <tr><th>묶음 (실험 수)</th><th>무엇을 바꿔 봤나</th><th class="n">최고 fold4</th></tr>
+        <tr><td>기준선 (6)</td><td>무작위·전부 보합·어제 따라하기·장전 등락·갭</td><td class="n">0.511</td></tr>
+        <tr class="hi"><td>B 규칙 (2)</td><td>갭 ÷ 변동성, + 밤사이 출렁임</td><td class="n">0.515</td></tr>
+        <tr><td>LightGBM 디코딩 (4)</td><td>같은 모델, 확률→등급 바꾸는 방법만</td><td class="n">0.495</td></tr>
+        <tr><td>C 텍스트 추가 (4)</td><td>LightGBM 에 뉴스·Reddit 피처 넣기</td><td class="n">0.494</td></tr>
+        <tr><td>v2 선형·트리 (12)</td><td>모델 4종, 손실 함수 6종</td><td class="n">0.507</td></tr>
+        <tr><td>v2 규칙+정보 (16)</td><td>규칙에 텍스트·실적·변동성 얹기</td><td class="n">0.517</td></tr>
+        <tr><td>v3 갭·국면·기간 (9)</td><td>시장 갭 분리, 시장 분위기, 최근 기간만 학습</td><td class="n">0.522</td></tr>
+      </table>
+      <ul class="small">
+        <li>LightGBM 은 모델은 그대로 두고 <b>찍는 방법만</b> 바꿔서 <span class="num">0.433 → 0.495</span> (+0.062). 모델 종류보다 "어떻게 찍느냐"가 훨씬 컸음.</li>
+        <li>LightGBM 에 텍스트를 넣으면 오히려 <span class="num">−0.002 ~ −0.025</span>.</li>
+      </ul>
+    </div>
+  </div></div>
+  <div class="foot"><span>전체 표: 부록 A1 · docs/presentation/experiment_table.md</span><span>7</span></div>
+</div></div>
+<details class="notes"><summary>발표 노트</summary><div>
+<p>지금까지 한 실험 전체를 한 그림에 모았습니다. 점 하나가 실험 하나이고, 가로축이 fold4 점수입니다. 초록 점선이 민영 규칙 0.515 이고, 왼쪽 회색 띠는 무작위로 찍었을 때 나오는 범위입니다.</p>
+<p>위에서부터 기준선, 민영 규칙, LightGBM, 채민 텍스트 추가, v2, v3 순서로 돌렸습니다. 아래로 갈수록 점들이 초록 선에 붙는데, 선을 넘는 것도 0.001에서 0.007 정도입니다.</p>
+<p>LightGBM 에서 배운 게 하나 있습니다. 모델을 바꾸는 것보다 확률을 등급으로 바꾸는 방법이 훨씬 중요했습니다. 가장 확률 높은 등급을 그대로 찍으면 보합을 37% 나 찍어서 0.433 이 나오고, 급등락을 더 찍도록 바꾸면 같은 모델로 0.495 까지 올라갑니다.</p>
+<p>표의 각 줄이 무엇을 바꾼 실험인지는 부록 A1 에 하나씩 적어 뒀습니다.</p>
+</div></details>
+</section>
+
+<!-- ============================================================ 8 -->
+<section class="unit" id="s8" data-t="벌점 출처">
+<div class="slide"><div class="s">
+  <h2>왜 안 오르나 ①: 잃는 점수의 절반이 3,000행 중 96행에서 나온다</h2>
+  <div class="body">
+    <div class="cols c73"><div><div class="fig"><img src="figs/07_errors.png" alt="급등락일 갭 부호 적중률과 벌점 출처"></div></div><div class="side">
+      <div class="box plain"><h4>무엇을 봤나</h4><p>fold4 검증 3,000행(50종목 × 60일)에서 규칙이 받은 벌점을 한 행씩 어디서 나왔는지 나눠 봄.</p></div>
+      <ul>
+        <li>실제로는 크게 움직였는데 <b>반대 방향으로 찍은 96행(3.2%)</b> → 벌점의 <span class="red">51%</span>.</li>
+        <li>크게 움직인 날을 보합으로 놓친 44행 → 7%. 나머지 2,860행이 41%.</li>
+        <li>왼쪽 그림: 실제로 크게 움직인 날만 모아서, 아침 갭 방향이 맞았던 비율. |gap_z| 가 0.25 미만이면 68%, 2 넘으면 100%.</li>
+        <li>반대로 찍은 96행은 <b>갭이 작아서 틀린 게 아님</b>: |gap_z| 중앙값 0.26 으로 전체(0.24)와 비슷. 아침엔 분명히 한쪽으로 가 있었는데 장중에 뒤집힌 날들.</li>
+        <li>실적 발표일 탓도 아님: 96행 중 1행.</li>
+        <li>특정 날에 몰림: 60일 중 상위 5일이 벌점 22% (고르게 나뉘면 8%). 처음 보는 종목 비중은 30% (전체에선 20%).</li>
+      </ul>
+    </div></div>
+  </div>
+  <div class="foot"><span>오차 분석 · fold4 B 규칙 예측 · scripts/analysis_figs.py fig_errors</span><span>8</span></div>
+</div></div>
+<details class="notes"><summary>발표 노트</summary><div>
+<p>규칙이 어디서 점수를 잃는지 행 하나하나를 봤습니다. 오른쪽 막대가 핵심입니다. 행 개수로는 3% 인데 벌점으로는 절반입니다. 앞에서 본 표에서 36이나 64가 붙는 칸들입니다.</p>
+<p>처음엔 갭이 아주 작아서 애매한 날에 틀렸을 거라고 생각했는데 아니었습니다. 반대로 찍은 행들의 갭 크기는 평소와 거의 같습니다. 아침에는 분명히 위로 가 있었는데 장이 열린 뒤에 아래로 크게 떨어진, 개장 전에는 알 수 없었던 날들입니다.</p>
+<p>실적 발표일도 아니었습니다. 96행 중 1행뿐입니다.</p>
+<p>대신 특정 날짜에 몰려 있었습니다. 60일 중 5일이 벌점의 22% 를 차지합니다. 시장 전체가 장중에 방향을 바꾼 날로 보입니다. 이런 날은 개장 전 정보로는 막기 어렵습니다.</p>
+</div></details>
+</section>
+
+<!-- ============================================================ 9 -->
+<section class="unit" id="s9" data-t="크게 찍기">
+<div class="slide"><div class="s">
+  <h2>왜 안 오르나 ②: 크기만 알고 방향을 모르면 크게 찍는 건 손해</h2>
+  <div class="body"><div class="cols c2">
+    <div>
+      <div class="fig"><img src="figs/05_upgrade.png" alt="상승을 급상승으로 올려 찍을 때 벌점 변화"></div>
+      <div class="box"><p class="small"><b>직접 해 봄:</b> fold4 에서 규칙이 '상승'으로 찍은 575행을 전부 '급상승'으로 바꿔 채점. 그 575행의 실제 결과는 급하락 23 · 하락 166 · 보합 180 · 상승 155 · 급상승 51. 맞아서 줄어든 벌점보다 반대여서 늘어난 벌점이 커서 분자 <span class="num">+1,425</span>, 점수 <span class="num">0.515 → 0.494</span>.</p></div>
+    </div>
+    <div>
+      <div class="sub">학습 데이터에게 직접 물어봄: 경계 이동 δ</div>
+      <p class="small" style="margin:0">급등락으로 찍는 경계 b 를 어떤 정보에 따라 올리거나 내릴 수 있게 하고, 얼마나 움직일지(δ)는 train 이 고르게 함. <b>δ 가 음수면 그 정보가 클 때 경계를 올림 = 급등락을 덜 찍음.</b></p>
+      <table class="t dense">
+        <tr><th>더해 본 정보 (모두 "크게 움직일 것" 신호)</th><th class="n">δ fold1/2/3/4</th><th>train 의 선택</th></tr>
+        <tr><td>오늘 실적 발표가 있음</td><td class="n">−0.2/−0.1/−0.2/−0.2</td><td>덜 찍음</td></tr>
+        <tr><td>시장 전체 갭이 큼</td><td class="n">−0.3/−0.3/−0.3/−0.3</td><td>덜 찍음</td></tr>
+        <tr><td>최근 60일 급등락이 잦은 종목</td><td class="n">−0.3/−0.3/−0.3/−0.1</td><td>덜 찍음</td></tr>
+        <tr><td>atr14 (최근 14일 평균 움직임)</td><td class="n">−0.3/−0.1/−0.3/−0.1</td><td>덜 찍음</td></tr>
+        <tr><td>시장 20일 변동성</td><td class="n">+0.3/+0.2/+0.3/+0.3</td><td>더 찍음</td></tr>
+        <tr><td>사건 단어 수 (기사 제목)</td><td class="n">0/0/0/0</td><td>안 씀</td></tr>
+      </table>
+      <div class="box warn"><p class="small">EDA 에서 실적 다음 날은 64% 가 급등락이었음. 그런데도 train 은 그날 <b>덜</b> 크게 찍는 쪽을 고름. 방향이 반반이면, 맞혀서 줄어드는 4 보다 틀려서 늘어나는 28 이 더 크기 때문.</p></div>
+    </div>
+  </div></div>
+  <div class="foot"><span>B PDF §4 "손실 7배" 를 우리 숫자로 확인 · cache/analysis/params.json</span><span>9</span></div>
+</div></div>
+<details class="notes"><summary>발표 노트</summary><div>
+<p>왼쪽은 벌점표에서 바로 나오는 계산입니다. '상승'으로 찍을 걸 '급상승'으로 바꾸면, 실제로 급상승이었을 때는 벌점이 4 줄고, 실제로 급하락이었을 때는 28 늘어납니다. 민영이 PDF 에서 손실이 7배라고 한 것과 같은 이야기입니다.</p>
+<p>말로만 하면 와닿지 않아서 실제로 해 봤습니다. fold4 에서 규칙이 상승으로 찍은 575행을 전부 급상승으로 바꿨더니 점수가 0.515 에서 0.494 로 떨어졌습니다.</p>
+<p>오른쪽이 오늘 제일 보여 드리고 싶은 표입니다. "크게 움직일 것 같다"는 정보를 규칙에 주고, 그걸 어떻게 쓸지 학습 데이터가 직접 고르게 했습니다. 실적 발표일, 시장 전체 갭이 큰 날, 원래 자주 크게 움직이는 종목, 전부 경계를 올렸습니다. 즉 급등락을 덜 찍는 쪽을 골랐습니다.</p>
+<p>크게 움직일 건 알아도 방향을 모르니, 크게 찍지 않는 게 낫다고 학습 데이터가 답한 겁니다. 그래서 크기 정보를 아무리 정교하게 만들어도 점수가 잘 안 오릅니다. 필요한 건 방향 정보입니다.</p>
+<p>하나 예외는 시장 전체 변동성인데, 이건 시장이 다 같이 크게 움직이는 시기에는 급등락을 더 찍으라고 나왔습니다.</p>
+</div></details>
+</section>
+
+<!-- ============================================================ 10 -->
+<section class="unit" id="s10" data-t="모델 해석">
+<div class="slide"><div class="s">
+  <h2>왜 안 오르나 ③: LightGBM 도 규칙과 같은 걸 보고 있다 <span class="tag">모델 해석</span></h2>
+  <div class="body">
+    <div class="cols c73"><div><div class="fig"><img src="figs/09_importance.png" alt="gain 중요도, 방향 기여, 크기 기여"></div></div><div class="side">
+      <div class="box plain"><h4>왜 중요도를 다시 봤나</h4><p>흔히 보는 중요도(회색, gain)는 "그 피처를 얼마나 많이 썼나"만 알려 주고, 예측을 위로 밀었는지 아래로 밀었는지는 안 알려 줌. 그래서 예측값을 피처별 몫으로 쪼개는 기여도(pred_contrib, SHAP 와 같은 방식)로 다시 계산함.</p></div>
+      <ul>
+        <li><b>방향</b>(초록, 급상승 쪽인지 급하락 쪽인지)은 gap · gap_z · gap_rel_z 가 거의 전부. 값이 클수록 위로 밀어냄 (값과 기여 상관 0.79~0.83).</li>
+        <li><b>크기</b>(주황, 보합에서 얼마나 멀어지나)는 atr14 · |gap_z| · 전일 고저폭. 결국 규칙의 "갭 ÷ 변동성"과 같은 구조를 다시 배운 셈.</li>
+        <li>폴드마다 중요도 순위가 거의 같음 (순위 상관 0.85~0.96).</li>
+        <li>C 텍스트 7개를 다 넣어도 텍스트 몫은 <b>4.8%</b>, 단어 목록·TF-IDF 를 넣어도 3.4%.</li>
+      </ul>
+    </div></div>
+  </div>
+  <div class="foot"><span>W&amp;B importance/fold1~4 · fold4 LightGBM 을 다시 학습해 pred_contrib 계산 (shap 패키지 없이)</span><span>10</span></div>
+</div></div>
+<details class="notes"><summary>발표 노트</summary><div>
+<p>LightGBM 이 규칙보다 못한 게 혹시 다른 걸 배워서인지 확인했습니다.</p>
+<p>회색이 흔히 보는 중요도인데, 이건 피처를 얼마나 많이 썼는지만 보여 주고 방향은 안 알려 줍니다. 그래서 예측값을 피처별로 쪼개서 "이 피처가 예측을 급상승 쪽으로 밀었나, 급하락 쪽으로 밀었나"를 따로 봤습니다. 이게 초록색입니다. 주황색은 "보합에서 얼마나 멀리 밀었나", 즉 크기 쪽입니다.</p>
+<p>방향은 갭 계열 피처가 거의 전부고, 크기는 변동성 피처들입니다. 결국 갭을 변동성으로 나누는 민영 규칙과 같은 걸 배웠고, 그걸 확률로 바꾸고 등급으로 찍는 과정에서 조금 손해를 본 걸로 보입니다.</p>
+<p>텍스트는 넣어도 모델이 거의 안 썼습니다. 비중이 5% 아래였습니다.</p>
+</div></details>
+</section>
+
+<!-- ============================================================ 11 -->
+<section class="unit" id="s11" data-t="노이즈">
+<div class="slide"><div class="s">
+  <h2>+0.005 는 우리가 구분할 수 있는 차이보다 작다</h2>
+  <div class="body">
+    <div class="cols c73"><div><div class="fig"><img src="figs/06_noise.png" alt="무작위 예측 점수 분포와 실제·가짜 변형의 fold4 변화"></div></div><div class="side">
+      <div class="box plain"><h4>질문</h4><p>0.515 와 0.522 는 정말 다른가? 점수가 원래 얼마나 흔들리는지부터 잼.</p></div>
+      <ul>
+        <li><b>무작위로 1,000번</b> 찍으면 fold4 점수가 평균 0 근처에서 표준편차 <b class="num">0.029</b> 로 흔들림 (왼쪽). worklog 의 "±0.07"은 폴드 사이 범위, "±0.03"은 이 표준편차라 둘 다 맞는 숫자.</li>
+        <li>규칙 점수도 검증 날짜를 다시 뽑으면(bootstrap) 95% 범위가 <b class="num">0.42 ~ 0.59</b>.</li>
+        <li><b>가짜 피처 시험</b>: atr14 값을 행끼리 무작위로 섞어 의미 없는 피처로 만든 뒤 같은 절차를 30번. train 이 28번 "안 씀"(δ=0)을 골랐고 가장 많이 오른 게 <span class="num">+0.002</span>. 실적일(+0.0001), atr14(+0.001)가 낸 차이는 이 범위 안 (오른쪽 위 줄).</li>
+        <li><b>recent250 − 규칙</b> = +0.0055. bootstrap 95% 범위 <span class="num">−0.002 ~ +0.014</span>, 0 이하로 나올 확률 9%.</li>
+      </ul>
+    </div></div>
+  </div>
+  <div class="foot"><span>노이즈 바닥 · 가짜 피처 비교는 B 의 방식 · 부록 A6</span><span>11</span></div>
+</div></div>
+<details class="notes"><summary>발표 노트</summary><div>
+<p>그럼 0.522 는 진짜 오른 거냐는 질문이 남습니다. 이걸 답하려면 점수가 원래 얼마나 흔들리는지부터 알아야 합니다.</p>
+<p>왼쪽은 아무 정보 없이 무작위로 1,000번 찍었을 때 점수입니다. 0 근처에서 ±0.03 정도 흔들립니다. 그리고 우리 규칙 점수도 검증 60일 중 어떤 날이 들어가느냐에 따라 0.42 에서 0.59 사이를 오갑니다.</p>
+<p>민영이 했던 가짜 피처 방식도 돌려 봤습니다. 실제 피처 값을 행끼리 뒤섞어서 아무 의미 없는 피처를 만들고, 진짜 실험과 똑같은 절차에 넣었습니다. 학습 데이터가 거의 항상 "안 쓴다"를 골랐습니다. 그러니까 우리 절차는 의미 없는 정보를 잘 안 집습니다. 그런데 진짜 피처들이 낸 차이도 그 가짜 범위 안에 있었습니다.</p>
+<p>recent250 은 0 이하가 나올 확률이 9% 라 조금 그럴듯하지만, 4월과 5월 두 달에서만 오른 거라 판단은 보류했습니다.</p>
+</div></details>
+</section>
+
+<!-- ============================================================ 12 -->
+<section class="unit" id="s12" data-t="결론">
+<div class="slide"><div class="s">
+  <h2>결론과 다음 단계</h2>
+  <div class="body"><div class="cols c2">
+    <div>
+      <div class="sub">정리</div>
+      <ul>
+        <li><b>제출은 v1(B 규칙) 그대로 둠.</b> <code>src/model.py</code> + 숫자 5개짜리 <code>gapz_rule.json</code> 으로 돌아가고 <code>main.py check</code> 통과.</li>
+        <li>점수는 <b>크게 움직인 날 방향을 맞혔느냐</b>로 갈림. 크기 정보(변동성·실적·뉴스 양·Reddit)는 학습 데이터가 덜 쓰거나 안 쓰는 쪽을 고름.</li>
+        <li>점수를 더 올릴 수 있는 건 개장 전에 보이는 <b>방향 정보</b>뿐. 지금 가진 것 중엔 갭이 유일함.</li>
+      </ul>
+      <div class="box warn"><h4>처음 보는 종목</h4><p class="small">fold4 에서 처음 보는 10종목 점수는 <span class="num">0.418</span>, 전체는 0.515. CVS 0.03 · NFLX 0.10 · WELL 0.20 세 종목이 특히 낮음 (부록 A8). 실제 평가 종목 20개 중 10개가 새 종목이라, 실제 점수는 fold4 보다 낮게 나올 가능성이 큼.</p></div>
+    </div>
+    <div>
+      <div class="sub">같이 정할 것</div>
+      <table class="t dense">
+        <tr><th>안건</th><th>근거</th><th>제안</th></tr>
+        <tr><td>최근 기간만 학습 (recent250 / winvote)</td><td>4월 0.517→0.527, 5월 0.532→0.538, 3월은 같음. 확실한 차이는 아님 (11쪽)</td><td>10월이 2026 상반기(급등락 19.5%)와 비슷한 시기라고 보면 후보로 둠</td></tr>
+        <tr><td>LLM 으로 기사 분류</td><td>점수를 올릴 수 있는 건 방향 정보뿐 (9쪽)</td><td>실적·가이던스 기사만 소량. 비용 먼저 추정</td></tr>
+        <tr><td>홀드아웃 1회 채점</td><td>아직 안 봄</td><td>최종 모델 정한 뒤 한 번만</td></tr>
+        <tr><td>학습 기간을 5/28 까지 늘리기</td><td>지금 v1 은 5/11 까지로 학습</td><td>홀드아웃 채점 뒤</td></tr>
+      </table>
+    </div>
+  </div></div>
+  <div class="foot"><span>A 파트 결과 해석</span><span>12</span></div>
+</div></div>
+<details class="notes"><summary>발표 노트</summary><div>
+<p>정리하면, 제출은 지금 v1 그대로 둡니다. 점수는 크게 움직인 날의 방향에서 갈리고, 지금 우리가 가진 정보 중 방향을 알려 주는 건 갭뿐입니다.</p>
+<p>걱정되는 건 처음 보는 종목입니다. 실제 평가 종목의 절반이 새 종목인데, fold4 에서 새 종목 점수가 0.1 낮았습니다. 세 종목이 특히 낮아서 종목 운도 있겠지만, 아직 대책은 없습니다.</p>
+<p>오른쪽 네 가지를 같이 정했으면 합니다. 최근 기간 학습은 확실한 차이가 아니라서, 10월이 올해 상반기처럼 크게 움직이는 시기일지에 대한 판단 문제입니다. LLM 을 쓴다면 기사에서 방향을 뽑아내는 데만 쓰는 게 맞다고 봅니다. 크기만 뽑으면 지금처럼 점수가 안 오를 겁니다.</p>
+</div></details>
+</section>
+
+<!-- ============================================================ 부록 -->
+<section class="unit" id="a0" data-t="부록">
+<div class="slide"><div class="s divider">
+  <h1>부록</h1>
+  <p>A1 실험 검증표 · A2 학습된 파라미터 · A3 점수식 분해 · A4 폴드별 · A5 월별 · A6 bootstrap · A7 gap_z 기여 · A8 처음 보는 종목 · A9 재현 · A10 기록과 다른 점 · A11 예상 질문</p>
+</div></div>
+</section>
+
+<section class="unit" id="a1-1" data-t="A1-1">
+<div class="slide"><div class="s">
+<h2>A1. 실험 검증표 (1/5)</h2>
+<div class="body"><table class="t dense"><tr><th>묶음</th><th>run</th><th>바꾼 것 (이전 run 대비 하나)</th><th class="n">f1</th><th class="n">f2</th><th class="n">f3</th><th class="n">f4</th><th class="n">평균</th><th class="n">unseen</th><th class="n">vs 규칙 f4</th></tr><tr><td>기준선</td><td>random_uniform</td><td>5등급 균등 무작위</td><td class="n">-0.069</td><td class="n">0.012</td><td class="n">-0.037</td><td class="n">0.010</td><td class="n">-0.021</td><td class="n">0.020</td><td class="n">-0.5055</td></tr><tr><td>기준선</td><td>random_prior</td><td>무작위 비율을 train 정답 비율로</td><td class="n">0.003</td><td class="n">-0.049</td><td class="n">-0.033</td><td class="n">0.022</td><td class="n">-0.014</td><td class="n">-0.046</td><td class="n">-0.4930</td></tr><tr><td>기준선</td><td>flat</td><td>전부 보합</td><td class="n">0.000</td><td class="n">0.000</td><td class="n">0.000</td><td class="n">0.000</td><td class="n">0.000</td><td class="n">0.000</td><td class="n">-0.5154</td></tr><tr><td>기준선</td><td>yesterday</td><td>어제 등락 label 그대로</td><td class="n">-0.131</td><td class="n">-0.116</td><td class="n">-0.069</td><td class="n">-0.011</td><td class="n">-0.082</td><td class="n">-0.008</td><td class="n">-0.5262</td></tr><tr><td>기준선</td><td>rule_pre_move</td><td>피처: 프리마켓 안 등락(pre_move), |s| 경계 train</td><td class="n">0.201</td><td class="n">0.221</td><td class="n">0.205</td><td class="n">0.306</td><td class="n">0.233</td><td class="n">0.299</td><td class="n">-0.2092</td></tr><tr><td>기준선</td><td>rule_ovn_gap</td><td>피처: 전일 종가 기준 갭 (A)</td><td class="n">0.423</td><td class="n">0.404</td><td class="n">0.391</td><td class="n">0.511</td><td class="n">0.432</td><td class="n">0.412</td><td class="n">-0.0041</td></tr><tr><td>규칙</td><td>rule_gapz</td><td>피처: 갭 ÷ vol20 (B)</td><td class="n">0.433</td><td class="n">0.431</td><td class="n">0.401</td><td class="n">0.512</td><td class="n">0.444</td><td class="n">0.415</td><td class="n">-0.0030</td></tr><tr class="hi"><td>규칙</td><td>rule_gapz_ext</td><td>피처: × exp(−λ·ext_range_z 표준화), λ∈{0..0.5} train (B 최종 = 제출 v1)</td><td class="n">0.434</td><td class="n">0.436</td><td class="n">0.402</td><td class="n">0.515</td><td class="n">0.447</td><td class="n">0.418</td><td class="n">+0.0000</td></tr><tr><td>LightGBM</td><td>lgb_v1_argmax</td><td>모델: LightGBM 다항, B 피처 26개, 디코딩 argmax</td><td class="n">0.325</td><td class="n">0.343</td><td class="n">0.345</td><td class="n">0.433</td><td class="n">0.361</td><td class="n">0.351</td><td class="n">-0.0828</td></tr><tr><td>LightGBM</td><td>lgb_v1_match_train</td><td>디코딩: 기대 등급을 train 정답 비율 분위로</td><td class="n">0.362</td><td class="n">0.409</td><td class="n">0.386</td><td class="n">0.478</td><td class="n">0.408</td><td class="n">0.378</td><td class="n">-0.0379</td></tr><tr><td>LightGBM</td><td>lgb_v1_match_recent</td><td>디코딩: 비율을 train 마지막 60일 정답 비율로</td><td class="n">0.363</td><td class="n">0.399</td><td class="n">0.391</td><td class="n">0.480</td><td class="n">0.408</td><td class="n">0.379</td><td class="n">-0.0351</td></tr><tr><td>LightGBM</td><td>lgb_v1_aggr</td><td>디코딩: 급등락 비율 ×k, 보합 ÷k (k 는 train 마지막 40일)</td><td class="n">0.346</td><td class="n">0.420</td><td class="n">0.392</td><td class="n">0.495</td><td class="n">0.413</td><td class="n">0.416</td><td class="n">-0.0200</td></tr></table></div>
+<div class="foot"><span>W&amp;B 기록 · '바꾼 것'은 a_v2.py EXPS · models2.py 코드로 확인 · 전체 열: experiment_table.md</span><span>A1-1</span></div>
+</div></div>
+</section>
+
+<section class="unit" id="a1-2" data-t="A1-2">
+<div class="slide"><div class="s">
+<h2>A1. 실험 검증표 (2/5)</h2>
+<div class="body"><table class="t dense"><tr><th>묶음</th><th>run</th><th>바꾼 것 (이전 run 대비 하나)</th><th class="n">f1</th><th class="n">f2</th><th class="n">f3</th><th class="n">f4</th><th class="n">평균</th><th class="n">unseen</th><th class="n">vs 규칙 f4</th></tr><tr><td>ablation</td><td>ablation_struct_aggr</td><td>피처: + text_overnight_hours (C)</td><td class="n">0.321</td><td class="n">0.407</td><td class="n">0.375</td><td class="n">0.494</td><td class="n">0.399</td><td class="n">0.408</td><td class="n">-0.0209</td></tr><tr><td>ablation</td><td>ablation_struct+news_aggr</td><td>피처: + C 뉴스 2개</td><td class="n">0.377</td><td class="n">0.395</td><td class="n">0.390</td><td class="n">0.492</td><td class="n">0.413</td><td class="n">0.416</td><td class="n">-0.0232</td></tr><tr><td>ablation</td><td>ablation_struct+reddit_aggr</td><td>피처: + C Reddit 3개</td><td class="n">0.363</td><td class="n">0.411</td><td class="n">0.393</td><td class="n">0.469</td><td class="n">0.409</td><td class="n">0.368</td><td class="n">-0.0464</td></tr><tr><td>ablation</td><td>ablation_struct+text_all_aggr</td><td>피처: + C 텍스트 7개 전부</td><td class="n">0.361</td><td class="n">0.403</td><td class="n">0.387</td><td class="n">0.474</td><td class="n">0.406</td><td class="n">0.374</td><td class="n">-0.0411</td></tr></table></div>
+<div class="foot"><span>W&amp;B 기록 · '바꾼 것'은 a_v2.py EXPS · models2.py 코드로 확인 · 전체 열: experiment_table.md</span><span>A1-2</span></div>
+</div></div>
+</section>
+
+<section class="unit" id="a1-3" data-t="A1-3">
+<div class="slide"><div class="s">
+<h2>A1. 실험 검증표 (3/5)</h2>
+<div class="body"><table class="t dense"><tr><th>묶음</th><th>run</th><th>바꾼 것 (이전 run 대비 하나)</th><th class="n">f1</th><th class="n">f2</th><th class="n">f3</th><th class="n">f4</th><th class="n">평균</th><th class="n">unseen</th><th class="n">vs 규칙 f4</th></tr><tr><td>v2 규칙</td><td>v2_rule_base</td><td>λ 후보만 {0..0.4} 로 (models2.LAMS) — 재구현 기준</td><td class="n">0.448</td><td class="n">0.436</td><td class="n">0.402</td><td class="n">0.515</td><td class="n">0.450</td><td class="n">0.418</td><td class="n">+0.0000</td></tr><tr><td>v2 규칙</td><td>v2_rule_lex_event</td><td>갭 신뢰도 γ·z(사건 단어 수)</td><td class="n">0.448</td><td class="n">0.436</td><td class="n">0.402</td><td class="n">0.515</td><td class="n">0.450</td><td class="n">0.418</td><td class="n">+0.0000</td></tr><tr><td>v2 규칙</td><td>v2_rule_lex_n</td><td>갭 신뢰도 γ·z(기사 제목 수)</td><td class="n">0.448</td><td class="n">0.436</td><td class="n">0.402</td><td class="n">0.515</td><td class="n">0.450</td><td class="n">0.418</td><td class="n">+0.0000</td></tr><tr><td>v2 규칙</td><td>v2_rule_news_c</td><td>갭 신뢰도 γ·z(C 장 마감 후 기사 수)</td><td class="n">0.448</td><td class="n">0.436</td><td class="n">0.402</td><td class="n">0.515</td><td class="n">0.450</td><td class="n">0.418</td><td class="n">+0.0000</td></tr><tr><td>v2 규칙</td><td>v2_rule_text_big</td><td>갭 신뢰도 γ·z(TF-IDF 급등락 확률)</td><td class="n">0.451</td><td class="n">0.432</td><td class="n">0.403</td><td class="n">0.511</td><td class="n">0.449</td><td class="n">0.417</td><td class="n">-0.0042</td></tr><tr><td>v2 규칙</td><td>v2_rsize_earn_now</td><td>급등락 경계 b·exp(−δ·z(실적 발표))</td><td class="n">0.450</td><td class="n">0.435</td><td class="n">0.405</td><td class="n">0.516</td><td class="n">0.451</td><td class="n">0.416</td><td class="n">+0.0001</td></tr><tr><td>v2 규칙</td><td>v2_rsize_lex_event</td><td>급등락 경계 ← 사건 단어 수</td><td class="n">0.448</td><td class="n">0.436</td><td class="n">0.402</td><td class="n">0.515</td><td class="n">0.450</td><td class="n">0.418</td><td class="n">+0.0000</td></tr><tr><td>v2 규칙</td><td>v2_rsize_lex_earn</td><td>급등락 경계 ← 실적 단어 수</td><td class="n">0.436</td><td class="n">0.428</td><td class="n">0.402</td><td class="n">0.514</td><td class="n">0.445</td><td class="n">0.416</td><td class="n">-0.0017</td></tr><tr><td>v2 규칙</td><td>v2_rsize_news_c</td><td>급등락 경계 ← C 기사 수</td><td class="n">0.437</td><td class="n">0.436</td><td class="n">0.402</td><td class="n">0.515</td><td class="n">0.448</td><td class="n">0.418</td><td class="n">+0.0000</td></tr><tr><td>v2 규칙</td><td>v2_rsize_atr14</td><td>급등락 경계 ← atr14</td><td class="n">0.441</td><td class="n">0.433</td><td class="n">0.398</td><td class="n">0.517</td><td class="n">0.447</td><td class="n">0.421</td><td class="n">+0.0011</td></tr><tr><td>v2 규칙</td><td>v2_radd_lex_posneg</td><td>s + β·sd·z(호재−악재 단어)</td><td class="n">0.448</td><td class="n">0.436</td><td class="n">0.402</td><td class="n">0.515</td><td class="n">0.450</td><td class="n">0.418</td><td class="n">+0.0000</td></tr><tr><td>v2 규칙</td><td>v2_rsize_text_big</td><td>급등락 경계 ← TF-IDF 급등락 확률</td><td class="n">0.451</td><td class="n">0.432</td><td class="n">0.402</td><td class="n">0.512</td><td class="n">0.449</td><td class="n">0.418</td><td class="n">-0.0039</td></tr><tr><td>v2 규칙</td><td>v2_radd_text_dir</td><td>s + β·sd·z(TF-IDF 방향)</td><td class="n">0.448</td><td class="n">0.436</td><td class="n">0.402</td><td class="n">0.515</td><td class="n">0.450</td><td class="n">0.418</td><td class="n">+0.0000</td></tr></table></div>
+<div class="foot"><span>W&amp;B 기록 · '바꾼 것'은 a_v2.py EXPS · models2.py 코드로 확인 · 전체 열: experiment_table.md</span><span>A1-3</span></div>
+</div></div>
+</section>
+
+<section class="unit" id="a1-4" data-t="A1-4">
+<div class="slide"><div class="s">
+<h2>A1. 실험 검증표 (4/5)</h2>
+<div class="body"><table class="t dense"><tr><th>묶음</th><th>run</th><th>바꾼 것 (이전 run 대비 하나)</th><th class="n">f1</th><th class="n">f2</th><th class="n">f3</th><th class="n">f4</th><th class="n">평균</th><th class="n">unseen</th><th class="n">vs 규칙 f4</th></tr><tr><td>v2 선형</td><td>v2_ridge_core</td><td>모델: Ridge(제곱 손실), 핵심 9개 → 수익률/vol20</td><td class="n">0.443</td><td class="n">0.411</td><td class="n">0.373</td><td class="n">0.504</td><td class="n">0.433</td><td class="n">0.373</td><td class="n">-0.0110</td></tr><tr><td>v2 선형</td><td>v2_huber_core</td><td>손실: 제곱 → Huber</td><td class="n">0.437</td><td class="n">0.414</td><td class="n">0.384</td><td class="n">0.507</td><td class="n">0.436</td><td class="n">0.399</td><td class="n">-0.0087</td></tr><tr><td>v2 선형</td><td>v2_huber_core_text</td><td>피처: + 사전 단어 6 + C 텍스트 3</td><td class="n">0.450</td><td class="n">0.412</td><td class="n">0.388</td><td class="n">0.501</td><td class="n">0.438</td><td class="n">0.401</td><td class="n">-0.0142</td></tr><tr><td>v2 선형</td><td>v2_logit_core</td><td>손실: 다항 로지스틱 → 기대 등급−2</td><td class="n">0.432</td><td class="n">0.403</td><td class="n">0.381</td><td class="n">0.500</td><td class="n">0.429</td><td class="n">0.383</td><td class="n">-0.0156</td></tr><tr><td>v2 트리</td><td>v2_lgb_l2_b26</td><td>목표: 등급 → 수익률/vol20 회귀(L2), gap_z 단조, 디코딩 |s| 경계</td><td class="n">0.259</td><td class="n">0.395</td><td class="n">0.410</td><td class="n">0.504</td><td class="n">0.392</td><td class="n">0.412</td><td class="n">-0.0119</td></tr><tr><td>v2 트리</td><td>v2_lgb_huber_b26</td><td>손실: L2 → Huber</td><td class="n">0.395</td><td class="n">0.397</td><td class="n">0.421</td><td class="n">0.481</td><td class="n">0.424</td><td class="n">0.386</td><td class="n">-0.0340</td></tr><tr><td>v2 트리</td><td>v2_lgb_l1_b26</td><td>손실: L2 → L1 (단조 제약 없음)</td><td class="n">0.416</td><td class="n">0.405</td><td class="n">0.411</td><td class="n">0.471</td><td class="n">0.426</td><td class="n">0.373</td><td class="n">-0.0447</td></tr><tr><td>v2 트리</td><td>v2_lgb_ord_b26</td><td>목표: label−2 회귀 (순서형 근사)</td><td class="n">0.344</td><td class="n">0.398</td><td class="n">0.387</td><td class="n">0.489</td><td class="n">0.405</td><td class="n">0.419</td><td class="n">-0.0265</td></tr><tr><td>v2 트리</td><td>v2_lgb_wmulti_b26</td><td>손실: 다항 + 행 가중(급등락 4, 보합 0.25), 디코딩 |s| 경계</td><td class="n">0.279</td><td class="n">0.398</td><td class="n">0.354</td><td class="n">0.499</td><td class="n">0.382</td><td class="n">0.428</td><td class="n">-0.0166</td></tr><tr><td>v2 트리</td><td>v2_hgb_l1_b26</td><td>모델: sklearn HistGB (L1)</td><td class="n">0.316</td><td class="n">0.375</td><td class="n">0.402</td><td class="n">0.451</td><td class="n">0.386</td><td class="n">0.351</td><td class="n">-0.0645</td></tr><tr><td>v2 트리</td><td>v2_lgb_huber_b26_lex</td><td>피처: + 사전 단어 6 + C 텍스트 3</td><td class="n">0.403</td><td class="n">0.407</td><td class="n">0.419</td><td class="n">0.486</td><td class="n">0.429</td><td class="n">0.389</td><td class="n">-0.0298</td></tr><tr><td>v2 트리</td><td>v2_lgb_huber_b26_lex_tfidf</td><td>피처: + TF-IDF 점수 2</td><td class="n">0.385</td><td class="n">0.401</td><td class="n">0.429</td><td class="n">0.488</td><td class="n">0.426</td><td class="n">0.389</td><td class="n">-0.0272</td></tr><tr><td>v2 앙상블</td><td>v2_ens_rule_huber_core</td><td>s_rule + w·s_huber(핵심 9)</td><td class="n">0.448</td><td class="n">0.436</td><td class="n">0.402</td><td class="n">0.515</td><td class="n">0.450</td><td class="n">0.418</td><td class="n">+0.0000</td></tr><tr><td>v2 앙상블</td><td>v2_ens_rule_huber_text</td><td>Huber 피처 + 텍스트 9</td><td class="n">0.448</td><td class="n">0.436</td><td class="n">0.402</td><td class="n">0.515</td><td class="n">0.450</td><td class="n">0.418</td><td class="n">+0.0000</td></tr><tr><td>v2 앙상블</td><td>v2_ens_rule_huber_tfidf</td><td>Huber 피처 + TF-IDF 2</td><td class="n">0.448</td><td class="n">0.436</td><td class="n">0.402</td><td class="n">0.515</td><td class="n">0.450</td><td class="n">0.418</td><td class="n">+0.0000</td></tr></table></div>
+<div class="foot"><span>W&amp;B 기록 · '바꾼 것'은 a_v2.py EXPS · models2.py 코드로 확인 · 전체 열: experiment_table.md</span><span>A1-4</span></div>
+</div></div>
+</section>
+
+<section class="unit" id="a1-5" data-t="A1-5">
+<div class="slide"><div class="s">
+<h2>A1. 실험 검증표 (5/5)</h2>
+<div class="body"><table class="t dense"><tr><th>묶음</th><th>run</th><th>바꾼 것 (이전 run 대비 하나)</th><th class="n">f1</th><th class="n">f2</th><th class="n">f3</th><th class="n">f4</th><th class="n">평균</th><th class="n">unseen</th><th class="n">vs 규칙 f4</th></tr><tr><td>v3</td><td>v3_gen_kappa</td><td>갭 = gap + κ·mkt_gap</td><td class="n">0.448</td><td class="n">0.436</td><td class="n">0.402</td><td class="n">0.515</td><td class="n">0.450</td><td class="n">0.418</td><td class="n">+0.0000</td></tr><tr><td>v3</td><td>v3_gen_theta</td><td>갭 = gap + θ·pre_move</td><td class="n">0.448</td><td class="n">0.436</td><td class="n">0.402</td><td class="n">0.515</td><td class="n">0.450</td><td class="n">0.418</td><td class="n">+0.0000</td></tr><tr><td>v3</td><td>v3_gen_kappa_theta</td><td>κ, θ 둘 다</td><td class="n">0.448</td><td class="n">0.436</td><td class="n">0.402</td><td class="n">0.515</td><td class="n">0.450</td><td class="n">0.418</td><td class="n">+0.0000</td></tr><tr><td>v3</td><td>v3_rsize_mkt_vol20</td><td>급등락 경계 ← 시장 변동성</td><td class="n">0.439</td><td class="n">0.433</td><td class="n">0.399</td><td class="n">0.516</td><td class="n">0.447</td><td class="n">0.418</td><td class="n">+0.0007</td></tr><tr><td>v3</td><td>v3_rsize_bigfreq60</td><td>급등락 경계 ← 종목 60일 급등락 빈도</td><td class="n">0.451</td><td class="n">0.427</td><td class="n">0.406</td><td class="n">0.515</td><td class="n">0.450</td><td class="n">0.420</td><td class="n">-0.0001</td></tr><tr><td>v3</td><td>v3_rsize_abs_mkt_gap</td><td>급등락 경계 ← |시장 갭|</td><td class="n">0.444</td><td class="n">0.421</td><td class="n">0.395</td><td class="n">0.511</td><td class="n">0.443</td><td class="n">0.394</td><td class="n">-0.0047</td></tr><tr><td>v3</td><td>v3_recent250</td><td>학습 창: 최근 250 기준일</td><td class="n">0.448</td><td class="n">0.434</td><td class="n">0.402</td><td class="n">0.521</td><td class="n">0.451</td><td class="n">0.434</td><td class="n">+0.0055</td></tr><tr><td>v3</td><td>v3_recent120</td><td>학습 창: 최근 120 기준일</td><td class="n">0.427</td><td class="n">0.404</td><td class="n">0.407</td><td class="n">0.520</td><td class="n">0.440</td><td class="n">0.428</td><td class="n">+0.0049</td></tr><tr><td>v3</td><td>v3_winvote</td><td>전체·250·120 창 규칙의 등급 중간값</td><td class="n">0.448</td><td class="n">0.435</td><td class="n">0.402</td><td class="n">0.522</td><td class="n">0.452</td><td class="n">0.435</td><td class="n">+0.0070</td></tr></table></div>
+<div class="foot"><span>W&amp;B 기록 · '바꾼 것'은 a_v2.py EXPS · models2.py 코드로 확인 · 전체 열: experiment_table.md</span><span>A1-5</span></div>
+</div></div>
+</section>
+
+<section class="unit" id="a2-1" data-t="A2-1">
+<div class="slide"><div class="s">
+<h2>A2. 폴드마다 train 이 고른 파라미터 (1/2)</h2>
+<div class="body"><p class="small mut" style="margin:0">값은 fold1/2/3/4 에서 train score 가 가장 높았던 후보. 강조한 줄 = 추가 정보의 가중치가 0 이 아닌 폴드가 있음. LightGBM 공격성 k = 3 / 1.5 / 2 / 2.5, 반복 수 45 / 47 / 70 / 54. 제출 규칙(B 원본, λ 후보 0~0.5) λ = 0.05 / 0.3 / 0.2 / 0.2.</p><table class="t dense"><tr><th>run</th><th class="n">λ 고저폭</th><th class="n">γ 신뢰도</th><th class="n">δ 경계</th><th class="n">β 방향</th><th class="n">w 앙상블</th><th class="n">κ 시장갭</th><th class="n">θ 장전</th></tr><tr><td>rule_gapz_ext</td><td class="n">0.05/0.3/0.2/0.2</td><td class="n"></td><td class="n"></td><td class="n"></td><td class="n"></td><td class="n"></td><td class="n"></td></tr><tr><td>v3_recent250</td><td class="n">0.4/0.4/0.1/0.1</td><td class="n">0/0/0/0</td><td class="n"></td><td class="n"></td><td class="n"></td><td class="n"></td><td class="n"></td></tr><tr><td>v2_rule_base</td><td class="n">0.4/0.3/0.2/0.2</td><td class="n">0/0/0/0</td><td class="n"></td><td class="n"></td><td class="n"></td><td class="n"></td><td class="n"></td></tr><tr><td>v2_rule_lex_event</td><td class="n">0.4/0.3/0.2/0.2</td><td class="n">0/0/0/0</td><td class="n"></td><td class="n"></td><td class="n"></td><td class="n"></td><td class="n"></td></tr><tr><td>v2_rule_lex_n</td><td class="n">0.4/0.3/0.2/0.2</td><td class="n">0/0/0/0</td><td class="n"></td><td class="n"></td><td class="n"></td><td class="n"></td><td class="n"></td></tr><tr><td>v2_rule_news_c</td><td class="n">0.4/0.3/0.2/0.2</td><td class="n">0/0/0/0</td><td class="n"></td><td class="n"></td><td class="n"></td><td class="n"></td><td class="n"></td></tr><tr class="hi"><td>v2_rule_text_big</td><td class="n">0/0.2/0.3/0.2</td><td class="n">-0.1/-0.1/-0.1/-0.1</td><td class="n"></td><td class="n"></td><td class="n"></td><td class="n"></td><td class="n"></td></tr><tr class="hi"><td>v2_rsize_earn_now</td><td class="n">0.4/0.3/0.2/0.2</td><td class="n"></td><td class="n">-0.2/-0.1/-0.2/-0.2</td><td class="n"></td><td class="n"></td><td class="n"></td><td class="n"></td></tr><tr><td>v2_rsize_lex_event</td><td class="n">0.4/0.3/0.2/0.2</td><td class="n"></td><td class="n">0/0/0/0</td><td class="n"></td><td class="n"></td><td class="n"></td><td class="n"></td></tr><tr class="hi"><td>v2_rsize_lex_earn</td><td class="n">0.4/0.3/0.2/0.2</td><td class="n"></td><td class="n">0.3/0.3/0/-0.1</td><td class="n"></td><td class="n"></td><td class="n"></td><td class="n"></td></tr><tr class="hi"><td>v2_rsize_news_c</td><td class="n">0.4/0.3/0.2/0.2</td><td class="n"></td><td class="n">0.3/0/0/0</td><td class="n"></td><td class="n"></td><td class="n"></td><td class="n"></td></tr><tr class="hi"><td>v2_rsize_text_big</td><td class="n">0.4/0.3/0.2/0.2</td><td class="n"></td><td class="n">-0.3/-0.1/0/-0.1</td><td class="n"></td><td class="n"></td><td class="n"></td><td class="n"></td></tr><tr class="hi"><td>v2_rsize_atr14</td><td class="n">0.4/0.3/0.2/0.2</td><td class="n"></td><td class="n">-0.3/-0.1/-0.3/-0.1</td><td class="n"></td><td class="n"></td><td class="n"></td><td class="n"></td></tr></table></div>
+<div class="foot"><span>scripts/analysis_params.py → cache/analysis/params.json</span><span>A2-1</span></div>
+</div></div>
+</section>
+
+<section class="unit" id="a2-2" data-t="A2-2">
+<div class="slide"><div class="s">
+<h2>A2. 폴드마다 train 이 고른 파라미터 (2/2)</h2>
+<div class="body"><p class="small mut" style="margin:0">값은 fold1/2/3/4 에서 train score 가 가장 높았던 후보. 강조한 줄 = 추가 정보의 가중치가 0 이 아닌 폴드가 있음. LightGBM 공격성 k = 3 / 1.5 / 2 / 2.5, 반복 수 45 / 47 / 70 / 54. 제출 규칙(B 원본, λ 후보 0~0.5) λ = 0.05 / 0.3 / 0.2 / 0.2.</p><table class="t dense"><tr><th>run</th><th class="n">λ 고저폭</th><th class="n">γ 신뢰도</th><th class="n">δ 경계</th><th class="n">β 방향</th><th class="n">w 앙상블</th><th class="n">κ 시장갭</th><th class="n">θ 장전</th></tr><tr><td>v2_radd_text_dir</td><td class="n">0.4/0.3/0.2/0.2</td><td class="n"></td><td class="n"></td><td class="n">0/0/0/0</td><td class="n"></td><td class="n"></td><td class="n"></td></tr><tr><td>v2_radd_lex_posneg</td><td class="n">0.4/0.3/0.2/0.2</td><td class="n"></td><td class="n"></td><td class="n">0/0/0/0</td><td class="n"></td><td class="n"></td><td class="n"></td></tr><tr><td>v3_gen_kappa</td><td class="n">0.4/0.3/0.2/0.2</td><td class="n"></td><td class="n"></td><td class="n"></td><td class="n"></td><td class="n">0/0/0/0</td><td class="n">0/0/0/0</td></tr><tr><td>v3_gen_theta</td><td class="n">0.4/0.3/0.2/0.2</td><td class="n"></td><td class="n"></td><td class="n"></td><td class="n"></td><td class="n">0/0/0/0</td><td class="n">0/0/0/0</td></tr><tr><td>v3_gen_kappa_theta</td><td class="n">0.4/0.3/0.2/0.2</td><td class="n"></td><td class="n"></td><td class="n"></td><td class="n"></td><td class="n">0/0/0/0</td><td class="n">0/0/0/0</td></tr><tr class="hi"><td>v3_rsize_mkt_vol20</td><td class="n">0.4/0.3/0.2/0.2</td><td class="n"></td><td class="n">0.3/0.2/0.3/0.3</td><td class="n"></td><td class="n"></td><td class="n"></td><td class="n"></td></tr><tr class="hi"><td>v3_rsize_bigfreq60</td><td class="n">0.4/0.3/0.2/0.2</td><td class="n"></td><td class="n">-0.3/-0.3/-0.3/-0.1</td><td class="n"></td><td class="n"></td><td class="n"></td><td class="n"></td></tr><tr class="hi"><td>v3_rsize_abs_mkt_gap</td><td class="n">0.4/0.3/0.2/0.2</td><td class="n"></td><td class="n">-0.3/-0.3/-0.3/-0.3</td><td class="n"></td><td class="n"></td><td class="n"></td><td class="n"></td></tr><tr><td>v3_recent120</td><td class="n">0.2/0.2/0.2/0.1</td><td class="n">0/0/0/0</td><td class="n"></td><td class="n"></td><td class="n"></td><td class="n"></td><td class="n"></td></tr><tr><td>v2_ens_rule_huber_core</td><td class="n">0.4/0.3/0.2/0.2</td><td class="n"></td><td class="n"></td><td class="n"></td><td class="n">0/0/0/0</td><td class="n"></td><td class="n"></td></tr><tr><td>v2_ens_rule_huber_text</td><td class="n">0.4/0.3/0.2/0.2</td><td class="n"></td><td class="n"></td><td class="n"></td><td class="n">0/0/0/0</td><td class="n"></td><td class="n"></td></tr><tr><td>v2_ens_rule_huber_tfidf</td><td class="n">0.4/0.3/0.2/0.2</td><td class="n"></td><td class="n"></td><td class="n"></td><td class="n">0/0/0/0</td><td class="n"></td><td class="n"></td></tr></table></div>
+<div class="foot"><span>scripts/analysis_params.py → cache/analysis/params.json</span><span>A2-2</span></div>
+</div></div>
+</section>
+
+<section class="unit" id="a3" data-t="A3">
+<div class="slide"><div class="s">
+<h2>A3. 점수식 분해: 규칙과 LightGBM 의 차이는 급등락 줄에서 생긴다</h2>
+<div class="body"><div class="cols c2"><div><div class="fig"><img src="figs/04_decompose.png" alt="정답 등급별 벌점"></div><table class="t dense"><tr><th>정답</th><th class="n">비율</th><th class="n">규칙 실제</th><th class="n">규칙 무작위</th><th class="n">LGB 실제</th><th class="n">LGB 무작위</th></tr><tr><td>급하락</td><td class="n">8.4%</td><td class="n">2,508</td><td class="n">6,597</td><td class="n">2,664</td><td class="n">6,297</td></tr><tr><td>하락</td><td class="n">26.6%</td><td class="n">1,783</td><td class="n">2,701</td><td class="n">1,738</td><td class="n">2,583</td></tr><tr><td>보합</td><td class="n">29.1%</td><td class="n">0</td><td class="n">0</td><td class="n">0</td><td class="n">0</td></tr><tr><td>상승</td><td class="n">24.8%</td><td class="n">1,674</td><td class="n">2,248</td><td class="n">1,657</td><td class="n">2,361</td></tr><tr><td>급상승</td><td class="n">11.2%</td><td class="n">3,424</td><td class="n">7,830</td><td class="n">3,768</td><td class="n">8,236</td></tr><tr class="hi"><td>합</td><td></td><td class="n">9,389</td><td class="n">19,376</td><td class="n">9,827</td><td class="n">19,476</td></tr></table></div><div><div class="fig"><img src="figs/A_decompose_cells.png" alt="칸별 차이"></div><ul class="small"><li>예측 비율 (급하락/하락/보합/상승/급상승) 규칙 21% / 18% / 17% / 19% / 25%, LGB aggr 23% / 20% / 11% / 25% / 21%, LGB argmax 5% / 20% / 37% / 30% / 8%.</li><li>분자(실제 벌점)는 LightGBM 이 438 더 큼 (9,827 vs 9,389). 그중 344 가 정답 급상승 줄, 156 이 급하락 줄. 분모는 두 모델이 거의 같음 (19,477 vs 19,376).</li><li>즉 차이는 급등락 날 방향을 얼마나 덜 틀리느냐에서 생김.</li></ul></div></div></div>
+<div class="foot"><span>fold4 · Σw·O 정답 등급별 · 혼동행렬은 W&amp;B confusion/fold4 와 같음</span><span>A3</span></div>
+</div></div>
+</section>
+
+<section class="unit" id="a4" data-t="A4">
+<div class="slide"><div class="s">
+<h2>A4. 폴드별 점수: 네 폴드 모두 순위가 같다</h2>
+<div class="body"><div class="cols c32"><div><div class="fig"><img src="figs/A_folds.png" alt="A4. 폴드별 점수: 네 폴드 모두 순위가 같다"></div></div><div><ul><li>fold1~3 은 EDA 기간과 겹쳐 참고용.</li><li>B 규칙 0.434 / 0.436 / 0.402 / 0.515, LightGBM aggr 0.346 / 0.420 / 0.392 / 0.495.</li><li>fold4 가 가장 높은 건 그 기간 급등락 비율이 높아서(19.5%, train 13.6%) 갭으로 맞힐 거리가 많았기 때문으로 보임.</li></ul></div></div></div>
+<div class="foot"><span>W&amp;B fold*/all/score</span><span>A4</span></div>
+</div></div>
+</section>
+
+<section class="unit" id="a5" data-t="A5">
+<div class="slide"><div class="s">
+<h2>A5. 월별: 급등락이 많은 달에 점수도 높다</h2>
+<div class="body"><div class="cols c32"><div><div class="fig"><img src="figs/08_monthly.png" alt="A5. 월별: 급등락이 많은 달에 점수도 높다"></div></div><div><ul><li>월은 <b>대상일</b> 기준 (W&amp;B monthly 표와 같음).</li><li>fold4 train 급등락 13.6%, fold4 val 19.5%.</li><li>recent250 은 3월 같고 4월 0.517→0.527, 5월 0.532→0.538. 급등락 비율이 높아진 2026 국면에 맞춘 경계가 그 국면에서만 나음.</li><li>LightGBM 은 2025 여름(fold1)에 크게 흔들림: 반복 수·k 를 정한 train 마지막 40일이 2025-04 관세 충격 직후.</li></ul></div></div></div>
+<div class="foot"><span>scripts/analysis_figs.py fig_monthly</span><span>A5</span></div>
+</div></div>
+</section>
+
+<section class="unit" id="a6" data-t="A6">
+<div class="slide"><div class="s">
+<h2>A6. recent250 − 규칙, 날짜 bootstrap</h2>
+<div class="body"><div class="cols c32"><div><div class="fig"><img src="figs/A_recent_boot.png" alt="A6. recent250 − 규칙, 날짜 bootstrap"></div></div><div><ul><li>fold4 val 60일을 복원 추출 1,000번, 두 모델을 같은 날짜로 채점해 차이.</li><li>95% 구간 -0.002 ~ +0.014, 0 이하 확률 9%.</li><li>규칙 fold4 점수 자체 95% 구간 0.42 ~ 0.59 (sd 0.044).</li><li>창 길이(250)는 검증 점수를 보기 전에 정한 후보. 여기서 더 고르면 fold4 에 맞추는 셈.</li></ul></div></div></div>
+<div class="foot"><span>scripts/analysis_figs.py fig_noise</span><span>A6</span></div>
+</div></div>
+</section>
+
+<section class="unit" id="a7" data-t="A7">
+<div class="slide"><div class="s">
+<h2>A7. gap_z 가 LightGBM 예측을 미는 방향</h2>
+<div class="body"><div class="cols c32"><div><div class="fig"><img src="figs/A_shap_gapz.png" alt="A7. gap_z 가 LightGBM 예측을 미는 방향"></div></div><div><ul><li>fold4 LightGBM (B 피처 26개, 반복 54회, k 2.5) 를 다시 학습해 val 3,000행의 pred_contrib.</li><li>세로축 = gap_z 가 급상승 logit − 급하락 logit 에 더한 값. 거의 단조 증가, 0 근처에서 급하게 바뀜.</li><li>방향 기여 상위: gap 0.63, gap_z 0.17, gap_rel_z 0.14, mkt_ret1 0.10.</li><li>크기 기여 상위: atr14 0.15, abs_gap_z 0.08, range1 0.08, gap 0.04.</li></ul></div></div></div>
+<div class="foot"><span>lightgbm Booster.predict(pred_contrib=True)</span><span>A7</span></div>
+</div></div>
+</section>
+
+<section class="unit" id="a8" data-t="A8">
+<div class="slide"><div class="s">
+<h2>A8. 처음 보는 종목: 세 종목이 점수를 끌어내린다</h2>
+<div class="body"><div class="cols c2"><div><table class="t dense"><tr><th>종목</th><th class="n">fold4 score</th><th class="n">vol20 평균</th></tr><tr class="hi"><td>CVS</td><td class="n">0.027</td><td class="n">0.0204</td></tr><tr class="hi"><td>NFLX</td><td class="n">0.103</td><td class="n">0.0254</td></tr><tr class="hi"><td>WELL</td><td class="n">0.203</td><td class="n">0.0150</td></tr><tr><td>RTX</td><td class="n">0.381</td><td class="n">0.0168</td></tr><tr><td>TMO</td><td class="n">0.385</td><td class="n">0.0206</td></tr><tr><td>GLW</td><td class="n">0.517</td><td class="n">0.0478</td></tr><tr><td>QCOM</td><td class="n">0.534</td><td class="n">0.0296</td></tr><tr><td>PFE</td><td class="n">0.544</td><td class="n">0.0130</td></tr><tr><td>BA</td><td class="n">0.557</td><td class="n">0.0225</td></tr><tr><td>BKNG</td><td class="n">0.609</td><td class="n">0.0266</td></tr></table></div><div><ul><li>처음 보는 10종목 전체 0.418, 본 종목 포함 전체 0.515.</li><li>급등락 비율 처음 보는 종목 22.8% vs 본 종목 18.7%, vol20 0.0238 vs 0.0209.</li><li>반대 방향 오답 96행 중 처음 보는 종목 30% (행 비중 20%).</li><li>규칙은 종목 이름을 안 씀 (갭 ÷ 자기 변동성). 학습에서 빠진 영향보다 이 세 종목이 그 기간 갭과 반대로 움직인 날이 많았던 영향으로 보임. 종목 10개라 운의 몫이 큼.</li></ul></div></div></div>
+<div class="foot"><span>fold4 · lab/folds.json unseen_symbols</span><span>A8</span></div>
+</div></div>
+</section>
+
+<section class="unit" id="a9" data-t="A9">
+<div class="slide"><div class="s">
+<h2>A9. 재현: 다시 돌린 run 전부 기록과 같은 점수</h2>
+<div class="body"><div class="cols c2"><div><ul><li>W&amp;B 기록 없이(track=False) 같은 폴드로 다시 돌린 run: <b>31개</b>, 네 폴드 점수가 기록과 같은 run: <b>31개</b> (최대 차이 0.00000).</li><li>핵심 세 숫자: B 규칙 fold4 0.5154, LightGBM aggr 0.4954, recent250 0.5209.</li><li>다시 돌리지 않은 것: 기준선 6개, rule_gapz, C 텍스트 ablation 4개 (같은 함수의 결과라 생략).</li><li>W&amp;B 의 빈 run 4개(failed_empty)는 오류로 점수 없이 끝난 첫 시도. 표에서 뺌.</li></ul></div><div><ul><li>재현 코드: <code>scripts/analysis_params.py</code></li><li>표: <code>docs/presentation/reproduce.csv</code></li><li>W&amp;B 원자료: <code>scripts/analysis_runs.py</code> → <code>experiment_table_raw.csv</code></li><li>그림·숫자: <code>scripts/analysis_figs.py</code> → <code>figs/</code>, <code>cache/analysis/numbers.json</code></li></ul></div></div></div>
+<div class="foot"><span>홀드아웃 날짜는 읽지 않음 (lab/folds.json 날짜만)</span><span>A9</span></div>
+</div></div>
+</section>
+
+<section class="unit" id="a10" data-t="A10">
+<div class="slide"><div class="s">
+<h2>A10. 기록과 다르게 나온 것</h2>
+<div class="body"><table class="t"><tr><th>항목</th><th>기존 기록</th><th>확인한 값</th></tr><tr><td>월별 점수의 월</td><td>worklog §2 '기준일 월'</td><td>W&amp;B monthly 는 <b>대상일</b> 월 (run_cv 예측의 date 열 = day.y 날짜)</td></tr><tr><td>recent120 5월 점수</td><td>§8 '5월 0.538~0.541' (세 run)</td><td>recent250 0.538, winvote 0.541, <b>recent120 0.533</b></td></tr><tr><td>'train 이 텍스트 가중치를 0 으로'</td><td>§7 세 방식 모두 0</td><td>신뢰도 γ·방향 β·앙상블 w·κ·θ 는 0. <b>경계 δ 는 0 아닌 값이 자주</b> (기사 수 0.3/0/0/0, 실적 단어 0.3/0.3/0/−0.1). text_big γ = −0.1</td></tr><tr><td>무작위 흔들림</td><td>§2.1 ±0.07, §7 ±0.03</td><td>±0.07 은 폴드 사이 범위, ±0.03 은 fold4 1σ (0.029). 둘 다 맞음</td></tr><tr><td>v3 run 태그</td><td>§8 'W&amp;B 태그 v2'</td><td>기록대로임. 다만 v3 를 찾으려면 이름(v3_*)으로 찾아야 함</td></tr><tr><td>기준선 6개 run</td><td></td><td>score_main · 월별 표 없음 (기능 추가 전 기록). 폴드 점수는 있음</td></tr><tr><td>analysis run vl8iwnuk</td><td></td><td>이번 분석 첫 기록. 날짜를 하루 어긋나게 붙인 오차 분석 숫자가 들어 있음 → 고친 뒤 다시 기록</td></tr></table></div>
+<div class="foot"><span>docs/worklog/2026-10-03_A_모델_v1_WandB.md 대비</span><span>A10</span></div>
+</div></div>
+</section>
+
+<section class="unit" id="a11-1" data-t="A11-1">
+<div class="slide"><div class="s">
+<h2>A11. 예상 질문과 답 (1/2)</h2>
+<div class="body"><table class="t dense" style="font-size:1.15cqw"><tr><th style="width:28%">질문</th><th>답 (근거)</th></tr><tr><td><b>Q1. 왜 딥러닝이나 LLM 으로 예측 안 했나?</b></td><td>9:30 전에 보이는 정보 중 방향 신호는 갭 하나(일별 IC 0.30)였고, 트리 모델도 기여도를 보면 같은 피처만 씀(10쪽). 학습 행 약 2만 개에서 딥러닝 이점이 없음. LLM 은 예산(14만원 중 절반 권장) 때문에 방향 정보를 뽑는 사건 분류에만 소량 쓸 계획.</td></tr><tr><td><b>Q2. 홀드아웃 점수는?</b></td><td>아직 안 봄. 최종 모델을 정한 뒤 load_folds(ds, holdout=True) 로 한 번만 채점하기로 함.</td></tr><tr><td><b>Q3. 과적합 아닌가?</b></td><td>규칙이 학습하는 숫자는 5개(λ, 경계 a·b, 표준화용 중앙값·표준편차). train 0.454 &lt; fold4 0.515 이고 네 폴드 모두 순위가 같음. 다만 실험 53개를 같은 fold4 로 비교했으니 &#x27;골라서 생기는&#x27; 과적합은 있음. 그래서 채택 기준과 가짜 피처 비교를 둠.</td></tr><tr><td><b>Q4. 갭을 쓰는 건 규칙 위반 아닌가?</b></td><td>과제 PDF 8쪽: cutoff(대상일 09:30)까지 들어오는 것에 &#x27;대상일 개장 전 시간외 거래&#x27;가 명시됨. 09:00 봉은 known_at 이 09:30 이라 day.price() 가 자동으로 빼서 실제로 쓰는 마지막 가격은 08:00 봉 종가(EDA 통합본 §5). 모든 예측은 guard 누수 검사 통과.</td></tr><tr><td><b>Q5. 왜 fold4 만 보나?</b></td><td>EDA 를 대상일 ~2026-02-13 데이터로 했음. fold1~3 val 은 그 안이라 우리가 이미 본 기간. EDA 와 안 겹치는 건 fold4 뿐.</td></tr></table></div>
+<div class="foot"><span>본편 쪽 번호 참고</span><span>A11-1</span></div>
+</div></div>
+</section>
+
+<section class="unit" id="a11-2" data-t="A11-2">
+<div class="slide"><div class="s">
+<h2>A11. 예상 질문과 답 (2/2)</h2>
+<div class="body"><table class="t dense" style="font-size:1.15cqw"><tr><th style="width:28%">질문</th><th>답 (근거)</th></tr><tr><td><b>Q6. 0.515 와 0.522 는 다른가?</b></td><td>날짜 bootstrap 으로 차이 95% 구간 −0.002 ~ +0.014, 0 이하 확률 9%. 그리고 4·5월에만 오름. 지금 데이터로는 구분이 안 됨.</td></tr><tr><td><b>Q7. LightGBM 이 왜 규칙보다 못한가?</b></td><td>학습 손실(로그 손실)이 점수식의 비대칭을 모름. argmax 로 찍으면 보합을 37% 찍어 0.433. 디코딩을 고치면 0.495, 점수식 가중을 넣어도 0.499. 배운 내용은 규칙과 같음(갭 방향 + 변동성 크기).</td></tr><tr><td><b>Q8. 텍스트는 정말 쓸모없나?</b></td><td>크기 신호는 있음(EDA 기사 수 크기 IC 0.086). 문제는 크기만으로는 점수가 안 오른다는 것(9쪽). 기사에서 방향(실적 서프라이즈, 가이던스 상향·하향)을 뽑을 수 있다면 다름.</td></tr><tr><td><b>Q9. 처음 보는 종목은 어떻게 하나?</b></td><td>규칙은 종목 이름 대신 자기 변동성으로 나눠서 그대로 적용됨. fold4 에서 낮은 건 세 종목(CVS·NFLX·WELL) 영향이 큼. 아직 대책은 없고, 10종목 표본이라 운의 몫도 큼.</td></tr><tr><td><b>Q10. 10월에 급등락 비율이 바뀌면?</b></td><td>경계를 |s| 분위로 정해서 예측 비율이 train 분포에 묶여 있음. 10월은 실적 시즌이라 실적일 비중이 커지는데, train 은 실적일에 오히려 덜 크게 찍는 쪽을 고름(9쪽). 최근 창 학습이 이 상황용 후보.</td></tr></table></div>
+<div class="foot"><span>본편 쪽 번호 참고</span><span>A11-2</span></div>
+</div></div>
+</section>
+
+
+</div>
+<script>
+(function () {
+  var btn = document.getElementById("toggle-notes");
+  btn.addEventListener("click", function () {
+    var all = document.querySelectorAll("details.notes");
+    var open = btn.dataset.open !== "1";
+    all.forEach(function (d) { d.open = open; });
+    btn.dataset.open = open ? "1" : "0";
+    btn.textContent = open ? "발표 노트 모두 접기" : "발표 노트 모두 펼치기";
+  });
+})();
+</script>
