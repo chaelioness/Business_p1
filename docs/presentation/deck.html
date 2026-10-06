@@ -97,7 +97,6 @@ details.notes p { margin: .55em 0; }
 <div class="wrap">
 <div class="toolbar">
   <span>A 파트 (남재은) · 팀 공유용 초안 · 2026-10-06 · 본편 1–12, 부록 A1–A11</span>
-  <button id="toggle-notes" type="button">발표 노트 모두 펼치기</button>
 </div>
 <nav class="toc" aria-label="슬라이드 목록"><a href="#s1">1 표지</a><a href="#s2">2 요약</a><a href="#s3">3 용어</a><a href="#s4">4 점수식</a><a href="#s5">5 검증 설계</a><a href="#s6">6 갭과 등급</a><a href="#s7">7 실험 여정</a><a href="#s8">8 벌점 출처</a><a href="#s9">9 크게 찍기</a><a href="#s10">10 모델 해석</a><a href="#s11">11 노이즈</a><a href="#s12">12 결론</a><a href="#a0">부록</a><a href="#a1-1">A1-1</a><a href="#a1-2">A1-2</a><a href="#a1-3">A1-3</a><a href="#a1-4">A1-4</a><a href="#a1-5">A1-5</a><a href="#a2-1">A2-1</a><a href="#a2-2">A2-2</a><a href="#a3">A3</a><a href="#a4">A4</a><a href="#a5">A5</a><a href="#a6">A6</a><a href="#a7">A7</a><a href="#a8">A8</a><a href="#a9">A9</a><a href="#a10">A10</a><a href="#a11-1">A11-1</a><a href="#a11-2">A11-2</a></nav>
 
@@ -111,11 +110,6 @@ details.notes p { margin: .55em 0; }
   <div class="who">남재은 (A · 모델·통합) &nbsp;·&nbsp; 팀 내부 공유 &nbsp;·&nbsp; 2026-10-06</div>
   <div class="who mut small" style="margin-top:1cqw">B 규칙(gap_z · ext_range_z) = 김민영 · 텍스트 피처 7개 = 안채민</div>
 </div></div>
-<details class="notes"><summary>발표 노트</summary><div>
-<p>오늘은 제가 10/2 회의 이후에 돌린 실험들을 정리해서 공유합니다. 시간이 10분이라 본편은 핵심만 보고, 자세한 표와 숫자는 뒤 부록에 다 넣어 뒀습니다.</p>
-<p>결론부터 말하면, 민영이 만든 갭 규칙을 아직 아무것도 못 넘었습니다. 오늘은 "왜 못 넘었는지"를 숫자로 확인한 과정을 설명하려고 합니다.</p>
-<p>숫자는 전부 W&amp;B 에 남은 기록을 제가 다시 돌려서 같은 값이 나오는지 맞춰 본 것입니다. 그리고 홀드아웃 기간(6월 이후)은 아무도 안 봤습니다.</p>
-</div></details>
 </section>
 
 <!-- ============================================================ 2 -->
@@ -127,7 +121,7 @@ details.notes p { margin: .55em 0; }
       <div class="stat"><div class="v">53</div><div class="k">점수를 낸 실험 수 (W&amp;B run)</div></div>
       <div class="stat"><div class="v">0.515</div><div class="k">B 규칙의 fold4 점수 = 지금 제출본</div></div>
       <div class="stat"><div class="v">0</div><div class="k">미리 정한 채택 기준을 통과한 실험</div></div>
-      <div class="stat"><div class="v">45/45</div><div class="k">다시 돌렸을 때 기록과 같은 점수</div></div>
+      <div class="stat"><div class="v">42/42</div><div class="k">다시 돌렸을 때 기록과 같은 점수</div></div>
     </div>
     <div class="sub">확인한 것</div>
     <ul>
@@ -139,12 +133,6 @@ details.notes p { margin: .55em 0; }
   </div>
   <div class="foot"><span>A 파트 결과 해석</span><span>2</span></div>
 </div></div>
-<details class="notes"><summary>발표 노트</summary><div>
-<p>위의 숫자 네 개만 기억하시면 됩니다. 실험 53개를 했고, 기준 점수는 0.515이고, 기준을 통과한 건 0개이고, 기록은 45개를 다시 돌려서 전부 같은 값이 나왔습니다.</p>
-<p>가장 높게 나온 건 winvote 0.522인데, 0.007 차이는 뒤에서 보여드리겠지만 우연으로도 충분히 나오는 크기입니다.</p>
-<p>그리고 왜 안 오르는지는 한 문장으로 정리됩니다. 규칙이 잃는 점수의 절반이 3% 행, 그러니까 방향을 정반대로 찍은 날에서 나옵니다. 변동성이나 뉴스 양 같은 정보는 "얼마나 크게 움직이나"는 알려 주지만 "어느 쪽으로"는 안 알려 줘서, 이 부분을 못 줄입니다.</p>
-<p>마지막 상자 세 개는 오늘 같이 정했으면 하는 것들입니다. 마지막 장에서 다시 보겠습니다.</p>
-</div></details>
 </section>
 
 <!-- ============================================================ 3 -->
@@ -177,11 +165,6 @@ details.notes p { margin: .55em 0; }
   </div></div>
   <div class="foot"><span>정의는 docs/glossary.md · work/a/gapz_rule.py 와 같음</span><span>3</span></div>
 </div></div>
-<details class="notes"><summary>발표 노트</summary><div>
-<p>본론 들어가기 전에 자주 나오는 말만 정리합니다. 이미 아시는 건 넘어가셔도 됩니다.</p>
-<p>제일 중요한 건 갭과 gap_z 입니다. 갭은 전날 종가에서 오늘 아침 개장 전 가격까지 얼마나 움직였냐는 거고, 이걸 그 종목이 평소 움직이는 크기로 나눈 게 gap_z 입니다. 테슬라가 2% 오른 것과 코카콜라가 2% 오른 건 의미가 다르니까 나눠서 비교하는 겁니다.</p>
-<p>오른쪽 마지막 줄의 그리스 문자들은 뒤에서 계속 나옵니다. 어떤 정보를 규칙에 더할 때 "얼마나 세게 반영할지"를 정하는 숫자인데, 우리가 정하지 않고 학습 데이터에서 점수가 제일 좋은 값을 고르게 했습니다. 0 이 골라졌다는 건 학습 데이터가 "그 정보는 안 쓰는 게 낫다"고 답했다는 뜻입니다.</p>
-</div></details>
 </section>
 
 <!-- ============================================================ 4 -->
@@ -208,12 +191,6 @@ details.notes p { margin: .55em 0; }
   </div></div>
   <div class="foot"><span>문제와 점수식 · 교수님 src.data.score 그대로 사용</span><span>4</span></div>
 </div></div>
-<details class="notes"><summary>발표 노트</summary><div>
-<p>다들 한 번 보신 표지만 오늘 이야기의 바탕이라 다시 봅니다. 세로가 실제 결과, 가로가 우리가 찍은 등급입니다. 대각선에서 멀어질수록, 그리고 실제 결과가 극단일수록 벌점이 제곱으로 커집니다.</p>
-<p>가운데 줄이 전부 0인 게 중요합니다. 실제로 보합이었던 날은 우리가 뭘 찍든 상관이 없습니다. 반대로 맨 위 줄과 맨 아래 줄, 그러니까 크게 움직인 날은 반대로 찍으면 36이나 64가 붙습니다.</p>
-<p>점수는 우리 벌점을 "무작위로 찍었다면 받았을 벌점"으로 나눠서 1에서 뺍니다. 여기서 헷갈리기 쉬운 점은, 이 무작위 벌점이 우리가 찍은 비율로 계산된다는 겁니다. 급등락을 많이 찍으면 분모도 커지기 때문에, "많이 찍으면 무조건 손해"도 아니고 "적게 찍으면 안전"도 아닙니다.</p>
-<p>fold4 규칙 숫자를 직접 넣어 보면 9,389 나누기 19,376 이 0.485 이고, 1에서 빼면 0.515 입니다.</p>
-</div></details>
 </section>
 
 <!-- ============================================================ 5 -->
@@ -244,12 +221,6 @@ details.notes p { margin: .55em 0; }
   </div>
   <div class="foot"><span>lab/folds.json · lab/leak.py · 10/2 회의 결정(안 2)</span><span>5</span></div>
 </div></div>
-<details class="notes"><summary>발표 노트</summary><div>
-<p>10/2 회의에서 정한 검증 방식 그대로입니다. 시간 순서대로 4번 잘라서, 앞부분으로 학습하고 뒤 60일로 채점합니다. 학습 기간은 폴드가 갈수록 늘어납니다.</p>
-<p>학습 끝과 채점 시작 사이 12거래일을 비우는 이유는 실제 상황 때문입니다. 우리가 받은 데이터는 9월 14일에 끝나고 평가는 10월 1일부터라, 그 사이가 12거래일입니다. 똑같이 비워 둬야 실제와 비슷한 점수가 나옵니다.</p>
-<p>fold4 만 보는 이유는, 우리가 EDA 를 2월 중순까지 데이터로 했기 때문입니다. fold1~3 은 EDA 하면서 이미 들여다본 기간이라 점수가 실제보다 좋게 나올 수 있어서 참고로만 씁니다.</p>
-<p>채택 기준은 민영이 제안한 것과 같고, 실험 돌리기 전에 정했습니다. 결과를 보고 기준을 바꾸지 않으려고 미리 정했고, 이 기준을 통과한 건 하나도 없습니다.</p>
-</div></details>
 </section>
 
 <!-- ============================================================ 6 -->
@@ -266,13 +237,6 @@ details.notes p { margin: .55em 0; }
   </div>
   <div class="foot"><span>EDA 출발점: 방향 = 갭 (일별 IC 0.30, A·B 동일) · 그림: scripts/analysis_figs.py</span><span>6</span></div>
 </div></div>
-<details class="notes"><summary>발표 노트</summary><div>
-<p>EDA 에서 세 사람이 공통으로 얻은 결론이 "방향은 갭"이었습니다. 이 그림은 그걸 규칙 점수 기준으로 다시 그린 겁니다.</p>
-<p>읽는 법을 먼저 말씀드리면, 학습 기간 1만 5천 행을 규칙 점수 순서로 세워서 같은 개수씩 12묶음으로 나눴습니다. 왼쪽 끝 묶음은 아침에 가장 크게 떨어져 있던 종목들이고, 오른쪽 끝은 가장 크게 올라 있던 종목들입니다. 막대 안의 색은 그 종목들이 실제로 그날 어떻게 끝났는지입니다.</p>
-<p>왼쪽은 빨강이 많고 오른쪽은 초록이 많습니다. 갭이 방향을 꽤 잘 알려 준다는 뜻입니다.</p>
-<p>점선 네 개가 학습 데이터가 고른 경계입니다. 의외였던 건 규칙이 급등락을 실제보다 세 배 가까이 많이 찍는다는 점입니다. 앞 장에서 말한 분모 효과 때문에 학습 데이터에서는 이게 점수가 제일 좋게 나옵니다.</p>
-<p>그런데 오른쪽 끝 묶음도 실제 급상승은 28% 뿐입니다. 방향은 대체로 맞지만 "얼마나 크게"는 자주 틀린다는 것, 이게 뒤 이야기의 출발점입니다.</p>
-</div></details>
 </section>
 
 <!-- ============================================================ 7 -->
@@ -301,12 +265,6 @@ details.notes p { margin: .55em 0; }
   </div></div>
   <div class="foot"><span>전체 표: 부록 A1 · docs/presentation/experiment_table.md</span><span>7</span></div>
 </div></div>
-<details class="notes"><summary>발표 노트</summary><div>
-<p>지금까지 한 실험 전체를 한 그림에 모았습니다. 점 하나가 실험 하나이고, 가로축이 fold4 점수입니다. 초록 점선이 민영 규칙 0.515 이고, 왼쪽 회색 띠는 무작위로 찍었을 때 나오는 범위입니다.</p>
-<p>위에서부터 기준선, 민영 규칙, LightGBM, 채민 텍스트 추가, v2, v3 순서로 돌렸습니다. 아래로 갈수록 점들이 초록 선에 붙는데, 선을 넘는 것도 0.001에서 0.007 정도입니다.</p>
-<p>LightGBM 에서 배운 게 하나 있습니다. 모델을 바꾸는 것보다 확률을 등급으로 바꾸는 방법이 훨씬 중요했습니다. 가장 확률 높은 등급을 그대로 찍으면 보합을 37% 나 찍어서 0.433 이 나오고, 급등락을 더 찍도록 바꾸면 같은 모델로 0.495 까지 올라갑니다.</p>
-<p>표의 각 줄이 무엇을 바꾼 실험인지는 부록 A1 에 하나씩 적어 뒀습니다.</p>
-</div></details>
 </section>
 
 <!-- ============================================================ 8 -->
@@ -328,12 +286,6 @@ details.notes p { margin: .55em 0; }
   </div>
   <div class="foot"><span>오차 분석 · fold4 B 규칙 예측 · scripts/analysis_figs.py fig_errors</span><span>8</span></div>
 </div></div>
-<details class="notes"><summary>발표 노트</summary><div>
-<p>규칙이 어디서 점수를 잃는지 행 하나하나를 봤습니다. 오른쪽 막대가 핵심입니다. 행 개수로는 3% 인데 벌점으로는 절반입니다. 앞에서 본 표에서 36이나 64가 붙는 칸들입니다.</p>
-<p>처음엔 갭이 아주 작아서 애매한 날에 틀렸을 거라고 생각했는데 아니었습니다. 반대로 찍은 행들의 갭 크기는 평소와 거의 같습니다. 아침에는 분명히 위로 가 있었는데 장이 열린 뒤에 아래로 크게 떨어진, 개장 전에는 알 수 없었던 날들입니다.</p>
-<p>실적 발표일도 아니었습니다. 96행 중 1행뿐입니다.</p>
-<p>대신 특정 날짜에 몰려 있었습니다. 60일 중 5일이 벌점의 22% 를 차지합니다. 시장 전체가 장중에 방향을 바꾼 날로 보입니다. 이런 날은 개장 전 정보로는 막기 어렵습니다.</p>
-</div></details>
 </section>
 
 <!-- ============================================================ 9 -->
@@ -362,13 +314,6 @@ details.notes p { margin: .55em 0; }
   </div></div>
   <div class="foot"><span>B PDF §4 "손실 7배" 를 우리 숫자로 확인 · cache/analysis/params.json</span><span>9</span></div>
 </div></div>
-<details class="notes"><summary>발표 노트</summary><div>
-<p>왼쪽은 벌점표에서 바로 나오는 계산입니다. '상승'으로 찍을 걸 '급상승'으로 바꾸면, 실제로 급상승이었을 때는 벌점이 4 줄고, 실제로 급하락이었을 때는 28 늘어납니다. 민영이 PDF 에서 손실이 7배라고 한 것과 같은 이야기입니다.</p>
-<p>말로만 하면 와닿지 않아서 실제로 해 봤습니다. fold4 에서 규칙이 상승으로 찍은 575행을 전부 급상승으로 바꿨더니 점수가 0.515 에서 0.494 로 떨어졌습니다.</p>
-<p>오른쪽이 오늘 제일 보여 드리고 싶은 표입니다. "크게 움직일 것 같다"는 정보를 규칙에 주고, 그걸 어떻게 쓸지 학습 데이터가 직접 고르게 했습니다. 실적 발표일, 시장 전체 갭이 큰 날, 원래 자주 크게 움직이는 종목, 전부 경계를 올렸습니다. 즉 급등락을 덜 찍는 쪽을 골랐습니다.</p>
-<p>크게 움직일 건 알아도 방향을 모르니, 크게 찍지 않는 게 낫다고 학습 데이터가 답한 겁니다. 그래서 크기 정보를 아무리 정교하게 만들어도 점수가 잘 안 오릅니다. 필요한 건 방향 정보입니다.</p>
-<p>하나 예외는 시장 전체 변동성인데, 이건 시장이 다 같이 크게 움직이는 시기에는 급등락을 더 찍으라고 나왔습니다.</p>
-</div></details>
 </section>
 
 <!-- ============================================================ 10 -->
@@ -388,12 +333,6 @@ details.notes p { margin: .55em 0; }
   </div>
   <div class="foot"><span>W&amp;B importance/fold1~4 · fold4 LightGBM 을 다시 학습해 pred_contrib 계산 (shap 패키지 없이)</span><span>10</span></div>
 </div></div>
-<details class="notes"><summary>발표 노트</summary><div>
-<p>LightGBM 이 규칙보다 못한 게 혹시 다른 걸 배워서인지 확인했습니다.</p>
-<p>회색이 흔히 보는 중요도인데, 이건 피처를 얼마나 많이 썼는지만 보여 주고 방향은 안 알려 줍니다. 그래서 예측값을 피처별로 쪼개서 "이 피처가 예측을 급상승 쪽으로 밀었나, 급하락 쪽으로 밀었나"를 따로 봤습니다. 이게 초록색입니다. 주황색은 "보합에서 얼마나 멀리 밀었나", 즉 크기 쪽입니다.</p>
-<p>방향은 갭 계열 피처가 거의 전부고, 크기는 변동성 피처들입니다. 결국 갭을 변동성으로 나누는 민영 규칙과 같은 걸 배웠고, 그걸 확률로 바꾸고 등급으로 찍는 과정에서 조금 손해를 본 걸로 보입니다.</p>
-<p>텍스트는 넣어도 모델이 거의 안 썼습니다. 비중이 5% 아래였습니다.</p>
-</div></details>
 </section>
 
 <!-- ============================================================ 11 -->
@@ -413,12 +352,6 @@ details.notes p { margin: .55em 0; }
   </div>
   <div class="foot"><span>노이즈 바닥 · 가짜 피처 비교는 B 의 방식 · 부록 A6</span><span>11</span></div>
 </div></div>
-<details class="notes"><summary>발표 노트</summary><div>
-<p>그럼 0.522 는 진짜 오른 거냐는 질문이 남습니다. 이걸 답하려면 점수가 원래 얼마나 흔들리는지부터 알아야 합니다.</p>
-<p>왼쪽은 아무 정보 없이 무작위로 1,000번 찍었을 때 점수입니다. 0 근처에서 ±0.03 정도 흔들립니다. 그리고 우리 규칙 점수도 검증 60일 중 어떤 날이 들어가느냐에 따라 0.42 에서 0.59 사이를 오갑니다.</p>
-<p>민영이 했던 가짜 피처 방식도 돌려 봤습니다. 실제 피처 값을 행끼리 뒤섞어서 아무 의미 없는 피처를 만들고, 진짜 실험과 똑같은 절차에 넣었습니다. 학습 데이터가 거의 항상 "안 쓴다"를 골랐습니다. 그러니까 우리 절차는 의미 없는 정보를 잘 안 집습니다. 그런데 진짜 피처들이 낸 차이도 그 가짜 범위 안에 있었습니다.</p>
-<p>recent250 은 0 이하가 나올 확률이 9% 라 조금 그럴듯하지만, 4월과 5월 두 달에서만 오른 거라 판단은 보류했습니다.</p>
-</div></details>
 </section>
 
 <!-- ============================================================ 12 -->
@@ -448,11 +381,6 @@ details.notes p { margin: .55em 0; }
   </div></div>
   <div class="foot"><span>A 파트 결과 해석</span><span>12</span></div>
 </div></div>
-<details class="notes"><summary>발표 노트</summary><div>
-<p>정리하면, 제출은 지금 v1 그대로 둡니다. 점수는 크게 움직인 날의 방향에서 갈리고, 지금 우리가 가진 정보 중 방향을 알려 주는 건 갭뿐입니다.</p>
-<p>걱정되는 건 처음 보는 종목입니다. 실제 평가 종목의 절반이 새 종목인데, fold4 에서 새 종목 점수가 0.1 낮았습니다. 세 종목이 특히 낮아서 종목 운도 있겠지만, 아직 대책은 없습니다.</p>
-<p>오른쪽 네 가지를 같이 정했으면 합니다. 최근 기간 학습은 확실한 차이가 아니라서, 10월이 올해 상반기처럼 크게 움직이는 시기일지에 대한 판단 문제입니다. LLM 을 쓴다면 기사에서 방향을 뽑아내는 데만 쓰는 게 맞다고 봅니다. 크기만 뽑으면 지금처럼 점수가 안 오를 겁니다.</p>
-</div></details>
 </section>
 
 <!-- ============================================================ 부록 -->
@@ -570,7 +498,7 @@ details.notes p { margin: .55em 0; }
 <section class="unit" id="a9" data-t="A9">
 <div class="slide"><div class="s">
 <h2>A9. 재현: 다시 돌린 run 전부 기록과 같은 점수</h2>
-<div class="body"><div class="cols c2"><div><ul><li>W&amp;B 기록 없이(track=False) 같은 폴드로 다시 돌린 run: <b>31개</b>, 네 폴드 점수가 기록과 같은 run: <b>31개</b> (최대 차이 0.00000).</li><li>핵심 세 숫자: B 규칙 fold4 0.5154, LightGBM aggr 0.4954, recent250 0.5209.</li><li>다시 돌리지 않은 것: 기준선 6개, rule_gapz, C 텍스트 ablation 4개 (같은 함수의 결과라 생략).</li><li>W&amp;B 의 빈 run 4개(failed_empty)는 오류로 점수 없이 끝난 첫 시도. 표에서 뺌.</li></ul></div><div><ul><li>재현 코드: <code>scripts/analysis_params.py</code></li><li>표: <code>docs/presentation/reproduce.csv</code></li><li>W&amp;B 원자료: <code>scripts/analysis_runs.py</code> → <code>experiment_table_raw.csv</code></li><li>그림·숫자: <code>scripts/analysis_figs.py</code> → <code>figs/</code>, <code>cache/analysis/numbers.json</code></li></ul></div></div></div>
+<div class="body"><div class="cols c2"><div><ul><li>W&amp;B 기록 없이(track=False) 같은 폴드로 다시 돌린 run: <b>42개</b>, 네 폴드 점수가 기록과 같은 run: <b>42개</b> (최대 차이 0.00000).</li><li>핵심 세 숫자: B 규칙 fold4 0.5154, LightGBM aggr 0.4954, recent250 0.5209.</li><li>다시 돌리지 않은 것: 기준선 6개, rule_gapz, C 텍스트 ablation 4개 (같은 함수의 결과라 생략).</li><li>W&amp;B 의 빈 run 4개(failed_empty)는 오류로 점수 없이 끝난 첫 시도. 표에서 뺌.</li></ul></div><div><ul><li>재현 코드: <code>scripts/analysis_params.py</code></li><li>표: <code>docs/presentation/reproduce.csv</code></li><li>W&amp;B 원자료: <code>scripts/analysis_runs.py</code> → <code>experiment_table_raw.csv</code></li><li>그림·숫자: <code>scripts/analysis_figs.py</code> → <code>figs/</code>, <code>cache/analysis/numbers.json</code></li></ul></div></div></div>
 <div class="foot"><span>홀드아웃 날짜는 읽지 않음 (lab/folds.json 날짜만)</span><span>A9</span></div>
 </div></div>
 </section>
@@ -601,15 +529,4 @@ details.notes p { margin: .55em 0; }
 
 
 </div>
-<script>
-(function () {
-  var btn = document.getElementById("toggle-notes");
-  btn.addEventListener("click", function () {
-    var all = document.querySelectorAll("details.notes");
-    var open = btn.dataset.open !== "1";
-    all.forEach(function (d) { d.open = open; });
-    btn.dataset.open = open ? "1" : "0";
-    btn.textContent = open ? "발표 노트 모두 접기" : "발표 노트 모두 펼치기";
-  });
-})();
-</script>
+

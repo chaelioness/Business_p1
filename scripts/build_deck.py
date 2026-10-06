@@ -214,6 +214,10 @@ def main():
     ids = re.findall(r'<section class="unit" id="([^"]+)" data-t="([^"]+)"', out)
     toc = "".join(f'<a href="#{i}">{(i[1:] + " ") if i[0] == "s" else ""}{E(t)}</a>' for i, t in ids)
     out = out.replace("{{TOC}}", toc)
+    # 발표 노트는 deck_src.html 에만 두고 게시본에서는 뺌 (상세 설명은 docs/presentation/해설.md)
+    out = re.sub(r'<details class="notes">.*?</details>\s*', "", out, flags=re.S)
+    out = re.sub(r'\s*<button id="toggle-notes".*?</button>', "", out, flags=re.S)
+    out = re.sub(r"<script>.*?</script>", "", out, flags=re.S)
     (DOC / "deck.html").write_text(out, encoding="utf-8")
     print(len(ids), "slides")
 
