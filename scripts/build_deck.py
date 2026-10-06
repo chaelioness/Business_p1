@@ -176,7 +176,7 @@ def diffs():
         ("무작위 흔들림", "§2.1 ±0.07, §7 ±0.03", "±0.07 은 폴드 사이 범위, ±0.03 은 fold4 1σ (0.029). 둘 다 맞음"),
         ("v3 run 태그", "§8 'W&amp;B 태그 v2'", "기록대로임. 다만 v3 를 찾으려면 이름(v3_*)으로 찾아야 함"),
         ("기준선 6개 run", "", "score_main · 월별 표 없음 (기능 추가 전 기록). 폴드 점수는 있음"),
-        ("analysis run vl8iwnuk", "", "이번 분석 첫 기록. 날짜를 하루 어긋나게 붙인 오차 분석 숫자가 들어 있음 → 고친 뒤 다시 기록"),
+        ("analysis run vl8iwnuk", "", "이번 분석 첫 기록. 날짜를 하루 어긋나게 붙인 오차 분석 숫자가 들어 있음 → 고친 뒤 mdaziq90 로 다시 기록, vl8iwnuk 는 삭제"),
     ]
     trs = ['<tr><th>항목</th><th>기존 기록</th><th>확인한 값</th></tr>'] + [f"<tr><td>{a}</td><td>{b}</td><td>{c}</td></tr>" for a, b, c in rows]
     return [slide("a10", "A10. 기록과 다르게 나온 것", f'<table class="t">{"".join(trs)}</table>',
