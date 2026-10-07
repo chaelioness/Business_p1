@@ -1,6 +1,6 @@
 # 강의자료 대조 리뷰 (2026-10-07, 민영)
 
-교수님 강의 [w4-2](<../../../docs/lectures/[w4-2] Text_Preprocessing.pdf>) · [w5-1](<../../../docs/lectures/[w5-1] Social_Text_Sentiment_Analysis.pdf>) · [w6-1](<../../../docs/lectures/[w6-1] Explainability_and_Language_Models.pdf>) 과 우리 레포를 대조해 빠진 것을 찾고, 금융 데이터(B)에서 더 할 일을 정리했습니다.
+교수님 강의 w4-2 · w5-1 · w6-1 과 우리 레포를 대조해 빠진 것을 찾고, 금융 데이터(B)에서 더 할 일을 정리했습니다.
 10/7 회의에서 정한 민영 몫 두 가지("강의자료 + 깃헙으로 빠진 것 점검, md 로 공유", "금융 데이터에서 더 처리할 것 파악")의 결과물입니다.
 
 | 문서 | 내용 | 누가 보면 좋은지 |
