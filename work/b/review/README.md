@@ -8,7 +8,7 @@
 | [explain/](explain/) | `explain_rule.py` 예측 분해, permutation, 그룹별 효과 | 03 |
 | [news_gap/](news_gap/) | `news_gap.py` 뉴스 있는 갭, 시장 전체가 뒤집힌 날, 뉴스 수 baseline | 05 |
 | [batch/](batch/) | `batch.py` 배치 실험 31개 | 06 |
-| [rest/](rest/) | `rest.py` LightGBM 묶음 중요도·faithfulness, 실적×갭, 처음 보는 종목, 텍스트 항목 (nogap 이 이 파일의 LightGBM 절차를 씀) | 07(정리 중) · 08 |
+| [rest/](rest/) | `rest.py` LightGBM 묶음 중요도·faithfulness, 실적×갭, 처음 보는 종목, 텍스트 항목 (nogap 이 이 파일의 LightGBM 절차를 씀) | 07 · 08 |
 | [nogap/](nogap/) | `nogap.py` 갭 없이 금융·텍스트 구성 8가지 | 08 |
 | [errors/](errors/) | `errors.py` 오답 분석 | 09 |
 | [tweak/](tweak/) | `tweak.py` 오답을 겨냥한 규칙 수정 | 10 |
