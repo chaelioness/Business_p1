@@ -243,3 +243,6 @@ wandb/
 
 # C 원본 산출물 중 큰 표
 work/c/artifacts/**/*.parquet
+
+# B 리뷰 스크립트 결과물 (스크립트로 다시 생성)
+work/b/review/*/out/
